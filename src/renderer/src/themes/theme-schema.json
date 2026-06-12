@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "name", "isDark", "tokens"],
+  "properties": {
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "author": { "type": "string" },
+    "version": { "type": "string" },
+    "isDark": { "type": "boolean" },
+    "preview": {
+      "type": "object",
+      "properties": {
+        "primary": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "background": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "foreground": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "required": ["global", "alias"],
+      "properties": {
+        "global": {
+          "type": "object",
+          "properties": {
+            "neutral": { "type": "object", "additionalProperties": { "type": "string" } },
+            "brand": { "type": "object", "additionalProperties": { "type": "string" } },
+            "shadow": { "type": "object", "additionalProperties": { "type": "string" } },
+            "corner": { "type": "object", "additionalProperties": { "type": "string" } },
+            "font": {
+              "type": "object",
+              "properties": {
+                "family": { "type": "string" },
+                "mono": { "type": "string" }
+              }
+            },
+            "duration": { "type": "object", "additionalProperties": { "type": "string" } },
+            "curve": { "type": "object", "additionalProperties": { "type": "string" } }
+          }
+        },
+        "alias": {
+          "type": "object",
+          "properties": {
+            "color": { "type": "object", "additionalProperties": { "type": "string" } }
+          }
+        },
+        "control": {
+          "type": "object",
+          "properties": {
+            "button": { "type": "object", "additionalProperties": { "type": "string" } },
+            "card": { "type": "object", "additionalProperties": { "type": "string" } },
+            "input": { "type": "object", "additionalProperties": { "type": "string" } },
+            "checkbox": { "type": "object", "additionalProperties": { "type": "string" } }
+          }
+        }
+      }
+    }
+  }
+}

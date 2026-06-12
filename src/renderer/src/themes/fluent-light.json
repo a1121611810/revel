@@ -1,0 +1,142 @@
+{
+  "$schema": "./theme-schema.json",
+  "id": "fluent-light",
+  "name": "Fluent Light",
+  "description": "Microsoft Fluent Design 2 浅色主题",
+  "author": "Microsoft",
+  "version": "2.0.0",
+  "isDark": false,
+  "preview": {
+    "primary": "#0078d4",
+    "background": "#f3f3f3",
+    "foreground": "#242424"
+  },
+  "tokens": {
+    "global": {
+      "neutral": {
+        "grey100": "#ffffff",
+        "grey98": "#fafafa",
+        "grey96": "#f5f5f5",
+        "grey92": "#eeeeee",
+        "grey88": "#e0e0e0",
+        "grey84": "#d6d6d6",
+        "grey80": "#cccccc",
+        "grey74": "#bdbdbd",
+        "grey48": "#7a7a7a",
+        "grey36": "#5c5c5c",
+        "grey24": "#3d3d3d",
+        "grey20": "#333333",
+        "grey16": "#292929",
+        "grey14": "#242424",
+        "grey12": "#1f1f1f",
+        "grey10": "#1a1a1a",
+        "grey8": "#141414",
+        "grey2": "#050505"
+      },
+      "brand": {
+        "brand100": "#4da6ff",
+        "brand90": "#288fde",
+        "brand80": "#0078d4",
+        "brand70": "#106ebe",
+        "brand60": "#005a9e",
+        "brand50": "#004578",
+        "brand40": "#003966"
+      },
+      "shadow": {
+        "shadow2": "0 0.5px 1px rgba(0,0,0,0.14), 0 0px 0.5px rgba(0,0,0,0.14)",
+        "shadow4": "0 1px 2px rgba(0,0,0,0.14), 0 0px 1px rgba(0,0,0,0.14)",
+        "shadow8": "0 2px 4px rgba(0,0,0,0.14), 0 0px 2px rgba(0,0,0,0.14)",
+        "shadow16": "0 4px 8px rgba(0,0,0,0.14), 0 0px 4px rgba(0,0,0,0.14)",
+        "shadow28": "0 7px 14px rgba(0,0,0,0.14), 0 0px 7px rgba(0,0,0,0.14)",
+        "shadow64": "0 16px 32px rgba(0,0,0,0.14), 0 0px 16px rgba(0,0,0,0.14)"
+      },
+      "corner": {
+        "corner20": "2px",
+        "corner40": "4px",
+        "corner80": "8px",
+        "corner120": "12px"
+      },
+      "font": {
+        "family": "'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif",
+        "mono": "'Cascadia Code', 'Fira Code', 'SF Mono', Consolas, monospace"
+      },
+      "duration": {
+        "duration50": "0.05s",
+        "duration100": "0.1s",
+        "duration200": "0.2s",
+        "duration400": "0.4s"
+      },
+      "curve": {
+        "curveEasyEase": "cubic-bezier(0.33, 0, 0.67, 1)",
+        "curveLinear": "linear"
+      }
+    },
+    "alias": {
+      "color": {
+        "neutralForeground1": "#242424",
+        "neutralForeground2": "#616161",
+        "neutralForeground3": "#808080",
+        "neutralForegroundDisabled1": "#bdbdbd",
+        "neutralForegroundOnBrand": "#ffffff",
+        "neutralBackgroundCanvas": "#f3f3f3",
+        "neutralBackground1": "#ffffff",
+        "neutralBackground2": "#f5f5f5",
+        "neutralBackground3": "#eeeeee",
+        "neutralBackgroundDisabled": "#f0f0f0",
+        "subtleBackground": "transparent",
+        "subtleBackgroundHover": "#f5f5f5",
+        "subtleBackgroundPressed": "#e0e0e0",
+        "neutralStroke1": "#d1d1d1",
+        "neutralStroke2": "#e0e0e0",
+        "neutralStroke3": "#eeeeee",
+        "neutralStrokeDisabled": "#e0e0e0",
+        "strokeFocus1": "#242424",
+        "brandForeground1": "#0078d4",
+        "brandBackground1": "#0078d4",
+        "brandBackgroundHover": "#106ebe",
+        "brandBackgroundPressed": "#005a9e",
+        "brandBackgroundTint": "rgba(0,120,212,0.08)",
+        "successForeground1": "#107c10",
+        "successBackground1": "rgba(16,124,16,0.1)",
+        "warningForeground1": "#c49400",
+        "warningBackground1": "rgba(196,148,0,0.1)",
+        "dangerForeground1": "#c50f1f",
+        "dangerBackground1": "rgba(197,15,31,0.1)"
+      }
+    },
+    "control": {
+      "button": {
+        "backgroundRest": "subtleBackground",
+        "backgroundHover": "subtleBackgroundHover",
+        "backgroundPressed": "subtleBackgroundPressed",
+        "backgroundDisabled": "subtleBackground",
+        "foregroundRest": "neutralForeground1",
+        "foregroundHover": "neutralForeground1",
+        "foregroundPressed": "neutralForeground1",
+        "foregroundDisabled": "neutralForegroundDisabled1",
+        "borderRest": "neutralStroke1",
+        "borderHover": "neutralStroke1",
+        "borderPressed": "neutralStroke1",
+        "borderDisabled": "neutralStrokeDisabled"
+      },
+      "card": {
+        "background": "neutralBackground1",
+        "border": "neutralStroke1",
+        "shadow": "shadow4",
+        "shadowHover": "shadow8",
+        "shadowPressed": "shadow2"
+      },
+      "input": {
+        "background": "neutralBackground1",
+        "border": "neutralStroke1",
+        "borderFocused": "strokeFocus1"
+      },
+      "checkbox": {
+        "background": "neutralBackground1",
+        "border": "neutralStroke1",
+        "backgroundChecked": "brandBackground1",
+        "foregroundChecked": "neutralForegroundOnBrand"
+      }
+    }
+  }
+}

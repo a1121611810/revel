@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Revel Menu Bar</title>
+    <style>
+      /* ============================================
+         Fluent Design Tokens — defaults (dark theme)
+         Overridden at runtime by user config + theme
+         ============================================ */
+      :root {
+        /* Module colors (user-configurable) */
+        --color-cpu: #5ac8fa;
+        --color-gpu: #ff9f0a;
+        --color-ram: #bf5af2;
+        --color-ssd: #30d158;
+
+        /* Range colors (user-configurable) */
+        --color-range-low: #30d158;
+        --color-range-mid: #ff9f0a;
+        --color-range-high: #ff453a;
+
+        /* Range thresholds (user-configurable) */
+        --threshold-mid: 50;
+        --threshold-high: 80;
+
+        /* Layout & typography (user-configurable) */
+        --popup-font-size: 12px;
+        --popup-spacing: 4px;
+        --popup-layout: horizontal;
+
+        /* Fluent Design tokens — dark theme defaults */
+        --font:
+          "Segoe UI Variable", "Segoe UI", -apple-system, BlinkMacSystemFont, "PingFang SC",
+          "Microsoft YaHei", "Noto Sans SC", sans-serif;
+        --font-mono: "Cascadia Code", "Fira Code", "SF Mono", Consolas, monospace;
+        --colorNeutralForeground1: #ffffff;
+        --colorNeutralForeground2: #d6d6d6;
+        --colorNeutralForeground3: #808080;
+        --colorNeutralBackgroundCanvas: #1f1f1f;
+        --colorNeutralBackground1: #292929;
+        --colorNeutralBackground2: #3d3d3d;
+        --colorNeutralStroke1: #525252;
+        --colorNeutralStroke2: #3d3d3d;
+        --colorNeutralStroke3: #4d4d4d;
+        --colorBrandForeground1: #4da6ff;
+        --colorSuccessForeground1: #54b054;
+        --colorWarningForeground1: #f2a93b;
+        --colorDangerForeground1: #e05252;
+        --colorNeutralForegroundOnBrand: #000000;
+        --corner40: 4px;
+        --corner80: 8px;
+        --corner120: 12px;
+        --cornerPill: 9999px;
+        --shadow4: 0 1px 2px rgba(0, 0, 0, 0.28), 0 0px 1px rgba(0, 0, 0, 0.28);
+        --shadow8: 0 2px 4px rgba(0, 0, 0, 0.28), 0 0px 2px rgba(0, 0, 0, 0.28);
+        --duration200: 0.2s;
+        --curveEasyEase: cubic-bezier(0.33, 0, 0.67, 1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font);
+        font-size: var(--popup-font-size);
+        background: var(--colorNeutralBackgroundCanvas);
+        color: var(--colorNeutralForeground1);
+        border-radius: var(--corner80);
+        overflow: hidden;
+        -webkit-app-region: drag;
+        user-select: none;
+        /* Fluent Acrylic material */
+        backdrop-filter: blur(80px) saturate(150%);
+        -webkit-backdrop-filter: blur(80px) saturate(150%);
+        box-shadow: var(--shadow8);
+      }
+
+      .popup-container {
+        padding: 16px;
+        max-height: 520px;
+        overflow-y: auto;
+        -webkit-app-region: no-drag;
+        /* Spacing between sections controlled by variable */
+      }
+
+      .popup-container::-webkit-scrollbar {
+        width: 4px;
+      }
+      .popup-container::-webkit-scrollbar-thumb {
+        background: var(--colorNeutralStroke2);
+        border-radius: 2px;
+      }
+
+      /* ==========================================
+         Header metrics — top summary row
+         ========================================== */
+      .header-metrics {
+        display: flex;
+        justify-content: space-around;
+        padding: 8px 0 12px;
+        border-bottom: 1px solid var(--colorNeutralStroke3);
+        margin-bottom: calc(var(--popup-spacing) * 3);
+      }
+
+      .header-metrics.layout-vertical {
+        flex-direction: column;
+        align-items: center;
+        gap: calc(var(--popup-spacing) * 2);
+      }
+
+      .header-metric {
+        text-align: center;
+      }
+
+      .header-metric .label {
+        font-size: calc(var(--popup-font-size) - 2px);
+        font-weight: 600;
+        color: var(--colorNeutralForeground3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+      }
+
+      .header-metric .value {
+        font-size: 18px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Module color classes */
+      .color-cpu {
+        color: var(--color-cpu);
+      }
+      .color-gpu {
+        color: var(--color-gpu);
+      }
+      .color-ram {
+        color: var(--color-ram);
+      }
+      .color-ssd {
+        color: var(--color-ssd);
+      }
+
+      /* ==========================================
+         Range color classes (low / mid / high)
+         ========================================== */
+      .range-low {
+        color: var(--color-range-low);
+      }
+      .range-mid {
+        color: var(--color-range-mid);
+      }
+      .range-high {
+        color: var(--color-range-high);
+      }
+
+      /* ==========================================
+         Section
+         ========================================== */
+      .section {
+        margin-bottom: calc(var(--popup-spacing) * 3);
+      }
+
+      .section-title {
+        font-size: calc(var(--popup-font-size) - 1px);
+        font-weight: 600;
+        color: var(--colorNeutralForeground3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid var(--colorNeutralStroke3);
+      }
+
+      /* ==========================================
+         Info rows
+         ========================================== */
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--popup-spacing) 0;
+        font-size: var(--popup-font-size);
+      }
+
+      .info-row .key {
+        color: var(--colorNeutralForeground3);
+      }
+
+      .info-row .val {
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        color: var(--colorNeutralForeground1);
+      }
+
+      /* ==========================================
+         Process list
+         ========================================== */
+      .process-list {
+        font-size: calc(var(--popup-font-size) - 1px);
+      }
+
+      .process-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 3px 0;
+      }
+
+      .process-item .name {
+        color: var(--colorNeutralForeground2);
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .process-item .pct {
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        min-width: 50px;
+        text-align: right;
+      }
+
+      .process-item .pct.range-high {
+        color: var(--color-range-high);
+      }
+      .process-item .pct.range-mid {
+        color: var(--color-range-mid);
+      }
+      .process-item .pct.range-low {
+        color: var(--color-range-low);
+      }
+
+      /* ==========================================
+         Progress bar — Fluent Design pattern
+         ========================================== */
+      .progress-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 3px 0;
+      }
+
+      .progress-label {
+        font-size: calc(var(--popup-font-size) - 1px);
+        color: var(--colorNeutralForeground3);
+        min-width: 50px;
+      }
+
+      .progress-track {
+        flex: 1;
+        height: 4px;
+        background: var(--colorNeutralStroke2);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width var(--duration200) var(--curveEasyEase);
+        position: relative;
+      }
+
+      /* Gradient highlight overlay (Fluent pattern) */
+      .progress-fill::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 20px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
+      }
+
+      .progress-fill.cpu {
+        background: var(--color-cpu);
+      }
+      .progress-fill.gpu {
+        background: var(--color-gpu);
+      }
+      .progress-fill.ram {
+        background: var(--color-ram);
+      }
+      .progress-fill.ssd {
+        background: var(--color-ssd);
+      }
+      .progress-fill.range-low {
+        background: var(--color-range-low);
+      }
+      .progress-fill.range-mid {
+        background: var(--color-range-mid);
+      }
+      .progress-fill.range-high {
+        background: var(--color-range-high);
+      }
+
+      .progress-value {
+        font-size: calc(var(--popup-font-size) - 1px);
+        font-weight: 600;
+        min-width: 40px;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ==========================================
+         Network
+         ========================================== */
+      .network-row {
+        display: flex;
+        gap: 16px;
+      }
+
+      .net-item {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .net-arrow {
+        font-size: 10px;
+        width: 14px;
+        text-align: center;
+      }
+
+      .net-arrow.down {
+        color: var(--color-ssd);
+      }
+      .net-arrow.up {
+        color: var(--color-cpu);
+      }
+
+      .net-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .net-label {
+        font-size: 9px;
+        color: var(--colorNeutralForeground3);
+        text-transform: uppercase;
+      }
+
+      .net-speed {
+        font-size: var(--popup-font-size);
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ==========================================
+         Battery
+         ========================================== */
+      .battery-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .battery-icon {
+        font-size: 14px;
+      }
+
+      .battery-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+
+      .battery-pct {
+        font-size: var(--popup-font-size);
+        font-weight: 600;
+      }
+
+      .battery-status {
+        font-size: calc(var(--popup-font-size) - 2px);
+        color: var(--colorNeutralForeground3);
+      }
+
+      .divider {
+        height: 1px;
+        background: var(--colorNeutralStroke3);
+        margin: 8px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="popup-container">
+      <!-- Header metrics -->
+      <div class="header-metrics" id="header-metrics">
+        <div class="header-metric" id="h-cpu-block">
+          <div class="label" data-i18n="cpu">CPU</div>
+          <div class="value color-cpu" id="h-cpu">--</div>
+        </div>
+        <div class="header-metric" id="h-gpu-block">
+          <div class="label" data-i18n="gpu">GPU</div>
+          <div class="value color-gpu" id="h-gpu">--</div>
+        </div>
+        <div class="header-metric" id="h-ram-block">
+          <div class="label" data-i18n="ram">RAM</div>
+          <div class="value color-ram" id="h-ram">--</div>
+        </div>
+        <div class="header-metric" id="h-ssd-block">
+          <div class="label" data-i18n="ssd">SSD</div>
+          <div class="value color-ssd" id="h-ssd">--</div>
+        </div>
+      </div>
+
+      <!-- CPU Section -->
+      <div class="section" id="section-cpu">
+        <div class="section-title" data-i18n="cpu">CPU</div>
+        <div class="info-row">
+          <span class="key" data-i18n="temp">温度</span>
+          <span class="val" id="cpu-temp">--</span>
+        </div>
+        <div class="info-row">
+          <span class="key" data-i18n="usage">使用率</span>
+          <span class="val" id="cpu-usage">--</span>
+        </div>
+        <div class="progress-row">
+          <div class="progress-track">
+            <div class="progress-fill cpu" id="cpu-bar" style="width: 0%"></div>
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="key" data-i18n="load">负载 (1/5/15 分钟)</span>
+          <span class="val" id="cpu-load">--</span>
+        </div>
+        <div class="info-row">
+          <span class="key" data-i18n="cores">核心数</span>
+          <span class="val" id="cpu-cores">--</span>
+        </div>
+        <div class="info-row">
+          <span class="key" data-i18n="model">型号</span>
+          <span
+            class="val"
+            id="cpu-model"
+            style="
+              font-size: 11px;
+              max-width: 180px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            "
+            >--</span
+          >
+        </div>
+      </div>
+
+      <!-- Top Processes -->
+      <div class="section" id="section-processes">
+        <div class="section-title" data-i18n="topProcs">高占用进程</div>
+        <div class="process-list" id="process-list">
+          <div class="process-item"><span class="name">--</span><span class="pct">--</span></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- GPU Section -->
+      <div class="section" id="section-gpu">
+        <div class="section-title" data-i18n="gpu">GPU</div>
+        <div class="progress-row">
+          <span class="progress-label" data-i18n="usage">使用率</span>
+          <div class="progress-track">
+            <div class="progress-fill gpu" id="gpu-bar" style="width: 0%"></div>
+          </div>
+          <span class="progress-value color-gpu" id="gpu-usage">--</span>
+        </div>
+        <div class="progress-row">
+          <span class="progress-label" data-i18n="vram">显存</span>
+          <div class="progress-track">
+            <div class="progress-fill gpu" id="vram-bar" style="width: 0%"></div>
+          </div>
+          <span class="progress-value" id="gpu-mem">--</span>
+        </div>
+        <div class="info-row" id="gpu-model-row" style="display: none">
+          <span class="key" data-i18n="model">型号</span>
+          <span class="val" id="gpu-model" style="font-size: 11px">--</span>
+        </div>
+      </div>
+
+      <!-- RAM Section -->
+      <div class="section" id="section-ram">
+        <div class="section-title" data-i18n="memory">内存</div>
+        <div class="progress-row">
+          <span class="progress-label" data-i18n="used">占用</span>
+          <div class="progress-track">
+            <div class="progress-fill ram" id="ram-bar" style="width: 0%"></div>
+          </div>
+          <span class="progress-value color-ram" id="ram-usage">--</span>
+        </div>
+        <div class="info-row">
+          <span class="key" data-i18n="usedTotal">已用 / 总量</span>
+          <span class="val" id="ram-detail">--</span>
+        </div>
+      </div>
+
+      <!-- SSD Section -->
+      <div class="section" id="section-ssd">
+        <div class="section-title" data-i18n="disk">磁盘</div>
+        <div class="progress-row">
+          <span class="progress-label" data-i18n="used">占用</span>
+          <div class="progress-track">
+            <div class="progress-fill ssd" id="ssd-bar" style="width: 0%"></div>
+          </div>
+          <span class="progress-value color-ssd" id="ssd-usage">--</span>
+        </div>
+        <div class="info-row">
+          <span class="key" data-i18n="usedTotal">已用 / 总量</span>
+          <span class="val" id="ssd-detail">--</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Network -->
+      <div class="section" id="section-network">
+        <div class="section-title" data-i18n="network">网络</div>
+        <div class="network-row">
+          <div class="net-item">
+            <span class="net-arrow down">↓</span>
+            <div class="net-info">
+              <span class="net-label" data-i18n="download">下载</span>
+              <span class="net-speed" id="net-down">--</span>
+            </div>
+          </div>
+          <div class="net-item">
+            <span class="net-arrow up">↑</span>
+            <div class="net-info">
+              <span class="net-label" data-i18n="upload">上传</span>
+              <span class="net-speed" id="net-up">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Battery -->
+      <div class="section" id="battery-section" style="display: none">
+        <div class="section-title" data-i18n="battery">电池</div>
+        <div class="battery-row">
+          <span class="battery-icon" id="batt-icon">🔋</span>
+          <div class="battery-info">
+            <span class="battery-pct" id="batt-pct">--</span>
+            <span class="battery-status" id="batt-status">--</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ─── Config store ───────────────────────────────────────
+      let currentConfig = {};
+
+      // ─── Helpers ────────────────────────────────────────────
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function setDisplay(id, show) {
+        const el = $(id);
+        if (el) el.style.display = show ? "" : "none";
+      }
+
+      // ─── i18n ────────────────────────────────────────────────
+      var I18N = {
+        en: {
+          cpu: "CPU",
+          gpu: "GPU",
+          ram: "RAM",
+          ssd: "SSD",
+          temp: "Temperature",
+          usage: "Usage",
+          load: "Load (1/5/15 min)",
+          cores: "Cores",
+          model: "Model",
+          topProcs: "Top Processes",
+          vram: "VRAM",
+          memory: "Memory",
+          disk: "Disk",
+          used: "Used",
+          usedTotal: "Used / Total",
+          network: "Network",
+          download: "Download",
+          upload: "Upload",
+          battery: "Battery",
+        },
+        zh: {
+          cpu: "CPU",
+          gpu: "GPU",
+          ram: "RAM",
+          ssd: "SSD",
+          temp: "温度",
+          usage: "使用率",
+          load: "负载 (1/5/15 分钟)",
+          cores: "核心数",
+          model: "型号",
+          topProcs: "高占用进程",
+          vram: "显存",
+          memory: "内存",
+          disk: "磁盘",
+          used: "占用",
+          usedTotal: "已用 / 总量",
+          network: "网络",
+          download: "下载",
+          upload: "上传",
+          battery: "电池",
+        },
+      };
+
+      function applyLocale(locale) {
+        var lang = (locale || "").toLowerCase().startsWith("zh") ? "zh" : "en";
+        var dict = I18N[lang] || I18N.en;
+        var els = document.querySelectorAll("[data-i18n]");
+        for (var i = 0; i < els.length; i++) {
+          var key = els[i].getAttribute("data-i18n");
+          if (dict[key]) els[i].textContent = dict[key];
+        }
+      }
+
+      // ─── Apply user config to DOM ───────────────────────────
+      function applyConfig(config) {
+        if (!config) {
+          console.log("[Popup] applyConfig: null config");
+          return;
+        }
+        console.log(
+          "[Popup] applyConfig called, keys:",
+          Object.keys(config),
+          "fontSize:",
+          config.fontSize,
+        );
+        currentConfig = config;
+
+        var root = document.documentElement;
+
+        // Apply locale
+        if (config._locale) {
+          applyLocale(config._locale);
+        }
+
+        // Font size
+        if (config.fontSize) {
+          root.style.setProperty("--popup-font-size", config.fontSize + "px");
+          console.log("[Popup] applyConfig: set --popup-font-size to", config.fontSize + "px");
+        }
+
+        // Spacing
+        if (config.spacing != null) {
+          root.style.setProperty("--popup-spacing", config.spacing + "px");
+          console.log("[Popup] applyConfig: set --popup-spacing to", config.spacing + "px");
+        }
+
+        // Module colors
+        if (config.moduleColors) {
+          if (config.moduleColors.cpu)
+            root.style.setProperty("--color-cpu", config.moduleColors.cpu);
+          if (config.moduleColors.gpu)
+            root.style.setProperty("--color-gpu", config.moduleColors.gpu);
+          if (config.moduleColors.ram)
+            root.style.setProperty("--color-ram", config.moduleColors.ram);
+          if (config.moduleColors.ssd)
+            root.style.setProperty("--color-ssd", config.moduleColors.ssd);
+        }
+
+        // Range colors
+        if (config.rangeColors) {
+          if (config.rangeColors.low)
+            root.style.setProperty("--color-range-low", config.rangeColors.low);
+          if (config.rangeColors.mid)
+            root.style.setProperty("--color-range-mid", config.rangeColors.mid);
+          if (config.rangeColors.high)
+            root.style.setProperty("--color-range-high", config.rangeColors.high);
+        }
+
+        // Thresholds
+        if (config.thresholds) {
+          if (config.thresholds.mid != null)
+            root.style.setProperty("--threshold-mid", config.thresholds.mid);
+          if (config.thresholds.high != null)
+            root.style.setProperty("--threshold-high", config.thresholds.high);
+        }
+
+        // Module visibility
+        const modules = config.modules || {};
+        setDisplay("h-cpu-block", modules.cpu !== false);
+        setDisplay("h-gpu-block", modules.gpu !== false);
+        setDisplay("h-ram-block", modules.ram !== false);
+        setDisplay("h-ssd-block", modules.ssd !== false);
+        setDisplay("section-cpu", modules.cpu !== false);
+        setDisplay("section-gpu", modules.gpu !== false);
+        setDisplay("section-ram", modules.ram !== false);
+        setDisplay("section-ssd", modules.ssd !== false);
+      }
+
+      // ─── Get range class for a percentage value ────────────
+      function getRangeClass(value) {
+        if (value == null) return "";
+        const mid =
+          parseInt(
+            getComputedStyle(document.documentElement).getPropertyValue("--threshold-mid"),
+          ) || 50;
+        const high =
+          parseInt(
+            getComputedStyle(document.documentElement).getPropertyValue("--threshold-high"),
+          ) || 80;
+        if (value >= high) return "range-high";
+        if (value >= mid) return "range-mid";
+        return "range-low";
+      }
+
+      // ─── Update UI with stats ──────────────────────────────
+      function updateStats(stats) {
+        if (!stats) return;
+
+        // Header with range colors
+        var cpuCls = getRangeClass(stats.cpuUsage);
+        var gpuCls = stats.gpuUsage >= 0 ? getRangeClass(stats.gpuUsage) : "";
+        var ramCls = getRangeClass(stats.memoryUsage);
+        var ssdCls = getRangeClass(stats.diskUsage);
+
+        $("h-cpu").textContent = (stats.cpuUsage || 0) + "%";
+        $("h-cpu").className = "value " + cpuCls;
+        $("h-gpu").textContent = stats.gpuUsage >= 0 ? stats.gpuUsage + "%" : "--";
+        $("h-gpu").className = "value " + (stats.gpuUsage >= 0 ? gpuCls : "");
+        $("h-ram").textContent = (stats.memoryUsage || 0) + "%";
+        $("h-ram").className = "value " + ramCls;
+        $("h-ssd").textContent = (stats.diskUsage || 0) + "%";
+        $("h-ssd").className = "value " + ssdCls;
+
+        // CPU
+        $("cpu-temp").textContent = stats.cpuTemp != null ? stats.cpuTemp + "°C" : "--";
+        $("cpu-usage").textContent = (stats.cpuUsage || 0) + "%";
+        $("cpu-bar").style.width = (stats.cpuUsage || 0) + "%";
+        $("cpu-bar").className = "progress-fill " + cpuCls;
+        $("cpu-cores").textContent = stats.cpuCores || "--";
+        $("cpu-model").textContent = stats.cpuModel || "--";
+
+        const l1 = stats.loadAvg1 != null ? stats.loadAvg1.toFixed(2) : "--";
+        const l5 = stats.loadAvg5 != null ? stats.loadAvg5.toFixed(2) : "--";
+        const l15 = stats.loadAvg15 != null ? stats.loadAvg15.toFixed(2) : "--";
+        $("cpu-load").textContent = l1 + " / " + l5 + " / " + l15;
+
+        // Processes
+        const procList = $("process-list");
+        const procs = stats.topProcesses || [];
+        if (procs.length === 0) {
+          procList.innerHTML =
+            '<div class="process-item"><span class="name">--</span><span class="pct">--</span></div>';
+        } else {
+          procList.innerHTML = procs
+            .map((p) => {
+              const cls = getRangeClass(p.cpu);
+              return (
+                '<div class="process-item"><span class="name">' +
+                escapeHtml(p.name) +
+                '</span><span class="pct ' +
+                cls +
+                '">' +
+                p.cpu.toFixed(1) +
+                "%</span></div>"
+              );
+            })
+            .join("");
+        }
+
+        // GPU
+        if (stats.gpuUsage >= 0) {
+          $("gpu-usage").textContent = stats.gpuUsage + "%";
+          $("gpu-usage").className = "progress-value " + gpuCls;
+          $("gpu-bar").style.width = stats.gpuUsage + "%";
+          $("gpu-bar").className = "progress-fill " + gpuCls;
+        } else {
+          $("gpu-usage").textContent = "--";
+          $("gpu-bar").style.width = "0%";
+        }
+
+        if (stats.totalGpuMemory > 0) {
+          $("gpu-mem").textContent = stats.usedGpuMemory + " / " + stats.totalGpuMemory + " GB";
+          const vramPct = Math.round((stats.usedGpuMemory / stats.totalGpuMemory) * 100);
+          $("vram-bar").style.width = vramPct + "%";
+        } else {
+          $("gpu-mem").textContent = "--";
+          $("vram-bar").style.width = "0%";
+        }
+
+        if (stats.gpuModel) {
+          $("gpu-model-row").style.display = "";
+          $("gpu-model").textContent = stats.gpuModel;
+        }
+
+        // RAM
+        $("ram-usage").textContent = (stats.memoryUsage || 0) + "%";
+        $("ram-usage").className = "progress-value " + ramCls;
+        $("ram-bar").style.width = (stats.memoryUsage || 0) + "%";
+        $("ram-bar").className = "progress-fill " + ramCls;
+        $("ram-detail").textContent =
+          (stats.usedMemory || 0) + " / " + (stats.totalMemory || 0) + " GB";
+
+        // SSD
+        $("ssd-usage").textContent = (stats.diskUsage || 0) + "%";
+        $("ssd-usage").className = "progress-value " + ssdCls;
+        $("ssd-bar").style.width = (stats.diskUsage || 0) + "%";
+        $("ssd-bar").className = "progress-fill " + ssdCls;
+        $("ssd-detail").textContent =
+          (stats.usedDisk || 0) + " / " + (stats.totalDisk || 0) + " GB";
+
+        // Network
+        $("net-down").textContent = stats.downloadSpeed || "--";
+        $("net-up").textContent = stats.uploadSpeed || "--";
+
+        // Battery
+        if (stats.batteryPercent > 0) {
+          $("battery-section").style.display = "";
+          $("batt-pct").textContent = stats.batteryPercent + "%";
+          let icon = "🔋";
+          if (stats.batteryPercent < 20) icon = "🪫";
+          if (stats.batteryStatus === "充电中") icon = "⚡";
+          $("batt-icon").textContent = icon;
+          const statusParts = [stats.batteryStatus, stats.batteryTime].filter(Boolean);
+          $("batt-status").textContent = statusParts.length > 0 ? statusParts.join(" · ") : "--";
+        } else {
+          $("battery-section").style.display = "none";
+        }
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      // ─── IPC listeners ─────────────────────────────────────
+      if (window.popupAPI) {
+        console.log("[Popup] popupAPI ready, version: 2026-06-12-v2");
+        window.popupAPI.onMenuBarStatus((stats) => {
+          updateStats(stats);
+        });
+
+        // Listen for config/theme updates
+        if (window.popupAPI.onMenuBarConfig) {
+          window.popupAPI.onMenuBarConfig((config) => {
+            console.log("[Popup] IPC received menu-bar-config, layout:", config?.layout);
+            applyConfig(config);
+          });
+        } else {
+          console.log("[Popup] onMenuBarConfig not available");
+        }
+      } else {
+        console.log("[Popup] window.popupAPI not available");
+      }
+    </script>
+  </body>
+</html>

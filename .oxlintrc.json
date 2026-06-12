@@ -1,0 +1,16 @@
+{
+  "plugins": ["vue", "vitest"],
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "ignorePatterns": ["node_modules", "dist", "out"],
+  "rules": {
+    "no-standalone-expect": "allow",
+    "expect-expect": "allow",
+    "require-to-throw-message": "allow"
+  }
+}

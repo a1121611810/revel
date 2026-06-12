@@ -1,0 +1,20 @@
+node_modules
+.DS_Store
+preview.html
+dist
+coverage
+tests/reports
+test-results
+.superpowers
+docs/*
+!docs/screenshots/
+release
+.reasonix/
+.pnpm-store
+.codegraph
+build/
+.pnpm-local/
+.mimocode/
+.playwright-mcp/
+.claude/
+scripts/Clean\ Revel\ Processes.app

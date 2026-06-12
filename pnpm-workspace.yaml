@@ -1,0 +1,4 @@
+allowBuilds:
+  canvas: true
+  electron: false
+  simple-git-hooks: true

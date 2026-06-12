@@ -1,0 +1,841 @@
+/* ============================================
+   Revel - Component Styles
+   Tokens are injected at runtime by Theme Engine
+   ============================================ */
+
+/* === Theme Transition === */
+body.theme-transitioning,
+body.theme-transitioning * {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease !important;
+}
+
+/* === Base === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font);
+}
+body {
+  -webkit-font-smoothing: antialiased;
+  background: var(--colorNeutralBackgroundCanvas);
+}
+
+/* === Acrylic Material === */
+.acrylic {
+  background: var(--colorNeutralBackground1);
+  backdrop-filter: blur(80px) saturate(150%);
+  -webkit-backdrop-filter: blur(80px) saturate(150%);
+}
+
+/* === App Layout === */
+.app-layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* === Sidebar === */
+.app-sidebar {
+  width: 260px;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--colorNeutralBackground1);
+  backdrop-filter: blur(60px) saturate(125%);
+  -webkit-backdrop-filter: blur(60px) saturate(125%);
+  border-right: 1px solid var(--colorNeutralStroke1);
+}
+
+.sidebar-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sidebar-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--cornerCircular);
+  background: var(--colorBrandBackground1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--colorNeutralForegroundOnBrand);
+  font-weight: 700;
+  font-size: 14px;
+}
+.sidebar-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--colorNeutralForeground1);
+  letter-spacing: -0.3px;
+}
+.sidebar-subtitle {
+  font-size: 11px;
+  color: var(--colorNeutralForeground3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* === Main Content === */
+.app-main {
+  flex: 1;
+  overflow: auto;
+  padding: 28px 32px;
+  position: relative;
+}
+
+/* === Page Header === */
+.page-header {
+  margin-bottom: 24px;
+}
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--colorNeutralForeground1);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+.page-subtitle {
+  font-size: 14px;
+  color: var(--colorNeutralForeground2);
+  margin-top: 6px;
+  font-weight: 400;
+}
+
+/* === Card === */
+.card {
+  background: var(--colorNeutralBackground1);
+  border: 1px solid var(--colorNeutralStroke1);
+  border-radius: var(--corner40);
+  box-shadow: var(--shadow4);
+  padding: 24px;
+  margin-bottom: 16px;
+  transition:
+    box-shadow var(--duration200) var(--curveEasyEase),
+    border-color var(--duration200) var(--curveEasyEase);
+  position: relative;
+  overflow: hidden;
+}
+.card:hover {
+  box-shadow: var(--shadow8);
+  border-color: var(--colorNeutralStroke2);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--colorNeutralForeground1);
+}
+.card-subtitle {
+  font-size: 13px;
+  color: var(--colorNeutralForeground3);
+  margin-top: 4px;
+}
+
+/* === Button (Fluent 2 - 6 States) === */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 16px;
+  border-radius: var(--corner40);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--colorNeutralStroke1);
+  background: var(--colorSubtleBackground);
+  color: var(--colorNeutralForeground1);
+  outline: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--duration100) var(--curveEasyEase),
+    border-color var(--duration100) var(--curveEasyEase),
+    color var(--duration100) var(--curveEasyEase);
+}
+
+/* Rest (default) — see above */
+
+/* Hover */
+.btn:hover:not(:disabled) {
+  background: var(--colorSubtleBackgroundHover);
+}
+
+/* Pressed */
+.btn:active:not(:disabled) {
+  background: var(--colorSubtleBackgroundPressed);
+}
+
+/* Focus */
+.btn:focus-visible {
+  outline: 2px solid var(--colorStrokeFocus1);
+  outline-offset: 2px;
+}
+
+/* Disabled */
+.btn:disabled {
+  color: var(--colorNeutralForegroundDisabled1);
+  border-color: var(--colorNeutralStrokeDisabled);
+  cursor: not-allowed;
+}
+
+/* Primary Button */
+.btn-primary {
+  background: var(--colorBrandBackground1);
+  color: var(--colorNeutralForegroundOnBrand);
+  border-color: transparent;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--colorBrandBackgroundHover);
+}
+.btn-primary:active:not(:disabled) {
+  background: var(--colorBrandBackgroundPressed);
+}
+.btn-primary:disabled {
+  background: var(--colorNeutralBackgroundDisabled);
+  color: var(--colorNeutralForegroundDisabled1);
+  border-color: transparent;
+}
+
+/* Outline Button (Fluent 2: same as default) */
+.btn-outline {
+  background: var(--colorSubtleBackground);
+  color: var(--colorNeutralForeground1);
+  border: 1px solid var(--colorNeutralStroke1);
+}
+.btn-outline:hover:not(:disabled) {
+  background: var(--colorSubtleBackgroundHover);
+}
+.btn-outline:active:not(:disabled) {
+  background: var(--colorSubtleBackgroundPressed);
+}
+
+/* Subtle Button */
+.btn-subtle {
+  background: transparent;
+  color: var(--colorNeutralForeground2);
+  border-color: transparent;
+}
+.btn-subtle:hover:not(:disabled) {
+  background: var(--colorSubtleBackgroundHover);
+  color: var(--colorNeutralForeground1);
+}
+.btn-subtle:active:not(:disabled) {
+  background: var(--colorSubtleBackgroundPressed);
+}
+
+/* Danger Button */
+.btn-danger {
+  background: var(--colorDangerForeground1);
+  color: #ffffff;
+  border-color: transparent;
+}
+.btn-danger:hover:not(:disabled) {
+  background: #a80d1a;
+}
+.btn-danger:active:not(:disabled) {
+  filter: brightness(0.85);
+}
+
+/* Small Button */
+.btn-small {
+  height: 28px;
+  padding: 0 12px;
+  font-size: 12px;
+  border-radius: var(--corner40);
+}
+
+/* === Checkbox === */
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--colorNeutralForeground1);
+  user-select: none;
+}
+.checkbox-input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--colorNeutralStroke1);
+  border-radius: var(--corner20);
+  background: var(--colorNeutralBackground1);
+  cursor: pointer;
+  transition: all var(--duration100);
+  position: relative;
+  flex-shrink: 0;
+}
+.checkbox-input:hover {
+  border-color: var(--colorBrandForeground1);
+}
+.checkbox-input:checked {
+  background: var(--colorBrandBackground1);
+  border-color: var(--colorBrandBackground1);
+}
+.checkbox-input:checked::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--colorNeutralForegroundOnBrand);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* === Badge === */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--cornerPill);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.badge-success {
+  background: var(--colorSuccessBackground1);
+  color: var(--colorSuccessForeground1);
+}
+.badge-info {
+  background: var(--colorBrandBackgroundTint);
+  color: var(--colorBrandForeground1);
+}
+.badge-warning {
+  background: var(--colorWarningBackground1);
+  color: var(--colorWarningForeground1);
+}
+.badge-danger {
+  background: var(--colorDangerBackground1);
+  color: var(--colorDangerForeground1);
+}
+
+/* === Tag (Pill) === */
+.tag {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: var(--cornerPill);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* === Progress Bar === */
+.progress-bar {
+  height: 4px;
+  background: var(--colorNeutralStroke3);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--colorBrandBackground1);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.progress-bar-fill::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
+}
+
+/* === Stat Card === */
+.stat-card {
+  background: var(--colorNeutralBackground1);
+  border: 1px solid var(--colorNeutralStroke1);
+  border-radius: var(--corner40);
+  box-shadow: var(--shadow4);
+  padding: 24px;
+  text-align: center;
+  transition:
+    box-shadow var(--duration200) var(--curveEasyEase),
+    border-color var(--duration200) var(--curveEasyEase);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card:hover {
+  box-shadow: var(--shadow8);
+  border-color: var(--colorNeutralStroke2);
+}
+.stat-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  display: block;
+}
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--colorBrandForeground1);
+  line-height: 1.2;
+}
+.stat-label {
+  font-size: 13px;
+  color: var(--colorNeutralForeground2);
+  margin-top: 8px;
+  font-weight: 500;
+}
+.stat-detail {
+  font-size: 11px;
+  color: var(--colorNeutralForeground3);
+  margin-top: 4px;
+}
+
+/* === Text Field === */
+.text-field {
+  width: 100%;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--colorNeutralStroke1);
+  border-radius: var(--corner40);
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--colorNeutralBackground1);
+  color: var(--colorNeutralForeground1);
+  outline: none;
+  transition:
+    border-color var(--duration100) var(--curveEasyEase),
+    background-color var(--duration100) var(--curveEasyEase);
+}
+.text-field:focus {
+  border-color: var(--colorStrokeFocus1);
+}
+.text-field::placeholder {
+  color: var(--colorNeutralForeground3);
+}
+
+/* === Table / List === */
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--colorNeutralStroke3);
+  transition:
+    background-color var(--duration100) var(--curveEasyEase),
+    border-color var(--duration100) var(--curveEasyEase);
+  border-radius: var(--corner40);
+  padding-left: 12px;
+  padding-right: 12px;
+  margin: 0 -12px;
+}
+.list-item:hover {
+  background: var(--colorSubtleBackgroundHover);
+}
+.list-item:active {
+  background: var(--colorSubtleBackgroundPressed);
+}
+.list-item:last-child {
+  border-bottom: none;
+}
+
+/* === App Icon === */
+.app-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--cornerCircular);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* === Terminal === */
+.terminal {
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  color: #a0d2eb;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  padding: 20px;
+  border-radius: var(--corner80);
+  white-space: pre-wrap;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* === Task Card === */
+.task-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--colorNeutralBackground1);
+  border: 1px solid var(--colorNeutralStroke2);
+  border-radius: var(--corner80);
+  transition:
+    background-color var(--duration200) var(--curveEasyEase),
+    border-color var(--duration200) var(--curveEasyEase),
+    box-shadow var(--duration200) var(--curveEasyEase);
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.task-card:hover {
+  background: var(--colorSubtleBackgroundHover);
+  border-color: var(--colorNeutralStroke1);
+  box-shadow: var(--shadow4);
+}
+.task-card:active {
+  background: var(--colorSubtleBackgroundPressed);
+}
+.task-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--cornerCircular);
+  background: var(--colorBrandBackgroundTint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 20px;
+}
+.task-info {
+  flex: 1;
+}
+.task-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--colorNeutralForeground1);
+}
+.task-desc {
+  font-size: 12px;
+  color: var(--colorNeutralForeground3);
+  margin-top: 3px;
+}
+
+/* === Grid === */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+.grid-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+/* === Animations === */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.fade-in {
+  animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.slide-in {
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === Stagger Fade In === */
+@keyframes staggerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.stagger-in > * {
+  animation: staggerFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--colorNeutralStroke2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--colorNeutralForeground3);
+}
+
+/* === Section Header === */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--colorNeutralForeground1);
+}
+
+/* === Action Bar === */
+.action-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* === Card Footer === */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--colorNeutralStroke3);
+}
+
+/* === Summary Text === */
+.summary-text {
+  font-size: 14px;
+  color: var(--colorNeutralForeground2);
+}
+.summary-text strong {
+  color: var(--colorBrandForeground1);
+  font-weight: 600;
+}
+
+/* === Network Display === */
+.net-display {
+  text-align: center;
+  padding: 16px;
+}
+.net-label {
+  font-size: 12px;
+  color: var(--colorNeutralForeground3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.net-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+.net-down {
+  color: var(--colorSuccessForeground1);
+}
+.net-up {
+  color: var(--colorBrandForeground1);
+}
+
+/* === GPU Card === */
+.gpu-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+}
+.gpu-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--colorNeutralForeground1);
+}
+.gpu-detail {
+  font-size: 13px;
+  color: var(--colorNeutralForeground3);
+}
+
+/* .main-content — App.vue 实际使用的类名 */
+.main-content {
+  flex: 1;
+  overflow: auto;
+  padding: 28px 32px;
+  position: relative;
+}
+
+/* .input / .input-with-icon — Uninstall/Purge/Installer 视图使用 */
+.input {
+  width: 100%;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--colorNeutralStroke1);
+  border-radius: var(--corner40);
+  font-family: var(--font);
+  font-size: 14px;
+  background: var(--colorNeutralBackground1);
+  color: var(--colorNeutralForeground1);
+  outline: none;
+  transition:
+    border-color var(--duration100) var(--curveEasyEase),
+    background-color var(--duration100) var(--curveEasyEase);
+}
+.input:focus {
+  border-color: var(--colorStrokeFocus1);
+}
+.input::placeholder {
+  color: var(--colorNeutralForeground3);
+}
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--colorNeutralForeground3);
+  pointer-events: none;
+}
+.input-with-icon {
+  padding-left: 38px;
+}
+
+/* .btn-danger-outline — InstallerView 使用 */
+.btn-danger-outline {
+  background: transparent;
+  color: var(--colorDangerForeground1);
+  border: 1px solid var(--colorDangerForeground1);
+}
+.btn-danger-outline:hover:not(:disabled) {
+  background: var(--colorDangerBackground1);
+}
+.btn-danger-outline:active:not(:disabled) {
+  background: var(--colorSubtleBackgroundPressed);
+}
+
+/* .btn-transparent — OptimizeView 使用 */
+.btn-transparent {
+  background: transparent;
+  color: var(--colorNeutralForeground2);
+  border: none;
+}
+.btn-transparent:hover:not(:disabled) {
+  background: var(--colorSubtleBackgroundHover);
+  color: var(--colorNeutralForeground1);
+}
+.btn-transparent:active:not(:disabled) {
+  background: var(--colorSubtleBackgroundPressed);
+}
+
+/* .text-body — CleanView/PurgeView/InstallerView 使用 */
+.text-body {
+  font-size: 14px;
+  color: var(--colorNeutralForeground1);
+  line-height: 1.5;
+}
+
+/* .checkbox-label — CleanView 使用 */
+.checkbox-label {
+  font-size: 14px;
+  color: var(--colorNeutralForeground1);
+}
+
+/* ============================================================
+   macOS Integrated Title Bar
+   ============================================================ */
+
+/* Sidebar titlebar area */
+.sidebar-titlebar {
+  display: none;
+  flex-shrink: 0;
+}
+.platform-darwin .sidebar-titlebar {
+  display: block;
+  height: 40px;
+  -webkit-app-region: drag;
+}
+
+/* Sidebar is draggable by default; interactive elements are not */
+.app-sidebar {
+  -webkit-app-region: drag;
+}
+
+/* Main content wrapper layout */
+.main-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Main content titlebar area */
+.main-content-titlebar {
+  display: none;
+  flex-shrink: 0;
+}
+.platform-darwin .main-content-titlebar {
+  display: block;
+  height: 40px;
+  -webkit-app-region: drag;
+}
+
+/* macOS: remove top padding from main-content since titlebar handles it */
+.platform-darwin .main-content {
+  padding-top: 0;
+}
