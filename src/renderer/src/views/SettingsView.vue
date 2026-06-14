@@ -176,15 +176,28 @@
           <div class="setting-info">
             <span class="setting-label">{{ $t("settings.autoLaunch") }}</span>
             <span class="setting-desc">{{ $t("settings.autoLaunchDesc") }}</span>
+            <span v-if="autoLaunchDevMode" class="setting-warning">{{
+              $t("settings.autoLaunchDevMode")
+            }}</span>
           </div>
           <label class="checkbox">
             <input
               v-model="startupEnabled"
               type="checkbox"
               class="checkbox-input"
+              :disabled="autoLaunchDevMode"
               @change="toggleAutoLaunch"
             />
             <span>{{ $t("settings.autoLaunchEnabled") }}</span>
+          </label>
+          <label v-if="startupEnabled && !autoLaunchDevMode" class="checkbox setting-sub">
+            <input
+              v-model="autoLaunchShowWindow"
+              type="checkbox"
+              class="checkbox-input"
+              @change="toggleAutoLaunchShowWindow"
+            />
+            <span>{{ $t("settings.autoLaunchShowWindow") }}</span>
           </label>
         </div>
 
@@ -864,11 +877,15 @@ async function quickTheme(mode) {
 
 // === Auto Launch ===
 const startupEnabled = ref(false);
+const autoLaunchDevMode = ref(false);
+const autoLaunchShowWindow = ref(false);
 
 async function loadAutoLaunchStatus() {
   try {
     const res = await window.electronAPI.getAutoLaunch();
     startupEnabled.value = res.enabled || false;
+    autoLaunchDevMode.value = res.devMode || false;
+    autoLaunchShowWindow.value = res.showWindow || false;
   } catch {
     startupEnabled.value = false;
   }
@@ -876,9 +893,22 @@ async function loadAutoLaunchStatus() {
 
 async function toggleAutoLaunch() {
   try {
-    await window.electronAPI.setAutoLaunch(startupEnabled.value);
+    const res = await window.electronAPI.setAutoLaunch(startupEnabled.value, {
+      showWindow: autoLaunchShowWindow.value,
+    });
+    if (res && !res.success) {
+      startupEnabled.value = !startupEnabled.value;
+    }
   } catch {
     startupEnabled.value = !startupEnabled.value;
+  }
+}
+
+async function toggleAutoLaunchShowWindow() {
+  try {
+    await window.electronAPI.setAutoLaunchShowWindow(autoLaunchShowWindow.value);
+  } catch {
+    autoLaunchShowWindow.value = !autoLaunchShowWindow.value;
   }
 }
 
@@ -1316,6 +1346,18 @@ async function openGitHub() {
 .setting-desc {
   font-size: 12px;
   color: var(--colorNeutralForeground3);
+}
+
+.setting-warning {
+  display: block;
+  font-size: 12px;
+  color: var(--colorPaletteRedForeground1, #d13438);
+  margin-top: 4px;
+}
+
+.setting-sub {
+  margin-left: 24px;
+  margin-top: 8px;
 }
 
 /* Theme Toggle Button Group */

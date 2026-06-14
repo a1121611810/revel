@@ -90,10 +90,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getAppVersion: () => ipcRenderer.invoke("get-app-version"),
 
   // Set auto launch (开机启动)
-  setAutoLaunch: (enabled) => ipcRenderer.invoke("set-auto-launch", enabled),
+  setAutoLaunch: (enabled, options) => ipcRenderer.invoke("set-auto-launch", enabled, options),
 
   // Get auto launch status
   getAutoLaunch: () => ipcRenderer.invoke("get-auto-launch"),
+
+  // Set auto launch show window preference
+  setAutoLaunchShowWindow: (showWindow) =>
+    ipcRenderer.invoke("set-auto-launch-show-window", showWindow),
 
   // Check if mole CLI is installed (used by welcome screen)
   checkMoleInstalled: () => ipcRenderer.invoke("check-mole-installed"),

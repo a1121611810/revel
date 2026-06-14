@@ -6,7 +6,12 @@
     <AuthErrorCard v-if="authError" @go-to-settings="navigateToSettings" />
 
     <div class="clean-toolbar">
-      <button class="btn btn-outline" :disabled="loading" @click="previewScan">
+      <button
+        class="btn btn-outline"
+        :disabled="loading"
+        @click="previewScan"
+        data-testid="clean-preview-scan"
+      >
         <svg class="" viewBox="0 0 20 20" fill="currentColor">
           <path
             d="M8.5 3a5.5 5.5 0 0 0-4.24 9.02l-.15.18a7 7 0 1 1 11.78 0l-.15-.18A5.5 5.5 0 0 0 8.5 3zm0 2a3.5 3.5 0 0 1 2.8 5.6l-2.8 3.79-2.8-3.8A3.5 3.5 0 0 1 8.5 5zm9.2 9.8a.5.5 0 0 1 .1.7l-3 4a.5.5 0 0 1-.76 0l-3-4a.5.5 0 0 1 .76-.64L14.5 17.8l2.6-3.46a.5.5 0 0 1 .6-.14z"

@@ -39,6 +39,9 @@ fixPathForGuiApp();
 
 // Single instance lock: prevent multiple Revel processes and duplicate Dock icons
 (function initSingleInstance() {
+  // Skip single instance lock in E2E test mode to allow test instances alongside installed app
+  if (process.env.REVEL_E2E === "1") return;
+
   const gotTheLock = app.requestSingleInstanceLock();
   if (!gotTheLock) {
     app.quit();
@@ -52,12 +55,20 @@ fixPathForGuiApp();
       mainWindow.focus();
     }
   });
-
-  // Set quitting flag so the close event handler allows actual quit on Dock → Quit
-  app.on("before-quit", () => {
-    app.isQuiting = true;
-  });
 })();
+
+// Set quitting flag so the close event handler allows actual quit on Dock → Quit
+app.on("before-quit", () => {
+  app.isQuiting = true;
+});
+
+// Global error handlers — prevent unhandled errors from crashing the app
+process.on("uncaughtException", (err) => {
+  console.error("[Main] Uncaught exception:", err.message, err.stack);
+});
+process.on("unhandledRejection", (reason) => {
+  console.error("[Main] Unhandled rejection:", reason);
+});
 
 const { StatusMonitor } = require("./status-monitor");
 const { MenuBarMonitor } = require("./menu-bar-monitor");
@@ -105,7 +116,9 @@ function getMenuBarMonitor() {
 // ──────────────────────────
 
 function getMenuBarConfigPath() {
-  return path.join(app.getPath("userData"), "menu-bar-config.json");
+  const userDataPath = app.getPath("userData");
+  if (!userDataPath || typeof userDataPath !== "string") return null;
+  return path.join(userDataPath, "menu-bar-config.json");
 }
 
 const MENU_BAR_CONFIG_DEFAULTS = {
@@ -143,7 +156,7 @@ const MENU_BAR_CONFIG_DEFAULTS = {
 function loadMenuBarConfig() {
   try {
     const p = getMenuBarConfigPath();
-    if (fs.existsSync(p)) {
+    if (p && fs.existsSync(p)) {
       const disk = JSON.parse(fs.readFileSync(p, "utf8"));
       // Migrate old flat config to new tray/popup structure
       const oldModules = disk.modules || {};
@@ -209,7 +222,47 @@ function loadMenuBarConfig() {
 
 function saveMenuBarConfig(config) {
   try {
-    fs.writeFileSync(getMenuBarConfigPath(), JSON.stringify(config), "utf8");
+    const p = getMenuBarConfigPath();
+    if (p) fs.writeFileSync(p, JSON.stringify(config), "utf8");
+  } catch {
+    // ignore
+  }
+}
+
+// ──────────────────────────────────────────────────────
+// Auto-launch config persistence (showWindow preference)
+// ──────────────────────────────────────────────────────
+
+function getAutoLaunchConfigPath() {
+  const userDataPath = app.getPath("userData");
+  if (!userDataPath || typeof userDataPath !== "string") return null;
+  return path.join(userDataPath, "auto-launch-config.json");
+}
+
+const AUTO_LAUNCH_CONFIG_DEFAULTS = {
+  showWindow: false,
+};
+
+function loadAutoLaunchConfig() {
+  try {
+    const p = getAutoLaunchConfigPath();
+    if (p && fs.existsSync(p)) {
+      const disk = JSON.parse(fs.readFileSync(p, "utf8"));
+      return {
+        ...AUTO_LAUNCH_CONFIG_DEFAULTS,
+        ...disk,
+      };
+    }
+  } catch {
+    // ignore
+  }
+  return { ...AUTO_LAUNCH_CONFIG_DEFAULTS };
+}
+
+function saveAutoLaunchConfig(config) {
+  try {
+    const p = getAutoLaunchConfigPath();
+    if (p) fs.writeFileSync(p, JSON.stringify(config), "utf8");
   } catch {
     // ignore
   }
@@ -303,7 +356,7 @@ function getTrayLabels() {
 //   ])
 // }
 
-function createWindow() {
+function createWindow(hidden = false) {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
@@ -328,7 +381,9 @@ function createWindow() {
   }
 
   mainWindow.once("ready-to-show", () => {
-    mainWindow.show();
+    if (!hidden) {
+      mainWindow.show();
+    }
     if (process.env.VITE_DEV_SERVER_URL) {
       mainWindow.webContents.openDevTools();
     }
@@ -413,7 +468,13 @@ app.whenReady().then(() => {
     }
   }
 
-  createWindow();
+  // 判断是否开机自动启动且用户未选择显示主界面
+  const loginSettings = app.getLoginItemSettings();
+  const autoLaunchConfig = loadAutoLaunchConfig();
+  const wasAutoLaunched = loginSettings.wasOpenedAtLogin;
+  const shouldHideWindow = wasAutoLaunched && !autoLaunchConfig.showWindow;
+
+  createWindow(shouldHideWindow);
 
   // Auto-start menu bar monitor if previously enabled (macOS only)
   if (process.platform === "darwin") {
@@ -687,12 +748,14 @@ ipcMain.on("mole-send-password", (event, password) => {
 
 // SafeStorage helpers for sudo password
 function getSudoPasswordPath() {
-  return path.join(app.getPath("userData"), "sudo-password.enc");
+  const userDataPath = app.getPath("userData");
+  if (!userDataPath || typeof userDataPath !== "string") return null;
+  return path.join(userDataPath, "sudo-password.enc");
 }
 function getSudoPasswordEncrypted() {
   try {
     const p = getSudoPasswordPath();
-    if (!fs.existsSync(p)) return null;
+    if (!p || !fs.existsSync(p)) return null;
     return fs.readFileSync(p, "utf8");
   } catch {
     return null;
@@ -700,7 +763,9 @@ function getSudoPasswordEncrypted() {
 }
 function saveSudoPasswordEncrypted(base64) {
   try {
-    fs.writeFileSync(getSudoPasswordPath(), base64, "utf8");
+    const p = getSudoPasswordPath();
+    if (!p) return false;
+    fs.writeFileSync(p, base64, "utf8");
     return true;
   } catch {
     return false;
@@ -709,6 +774,7 @@ function saveSudoPasswordEncrypted(base64) {
 function clearSudoPasswordEncrypted() {
   try {
     const p = getSudoPasswordPath();
+    if (!p) return false;
     if (fs.existsSync(p)) fs.unlinkSync(p);
     return true;
   } catch {
@@ -885,34 +951,50 @@ ipcMain.handle("get-app-version", (event) => {
 });
 
 // IPC: Set auto launch (开机启动)
-ipcMain.handle("set-auto-launch", async (event, enabled) => {
+ipcMain.handle("set-auto-launch", async (event, enabled, options) => {
   if (!validateSender(event.senderFrame)) {
     throw new Error("Invalid sender");
   }
-  if (process.platform === "darwin") {
-    const appPath = app.getPath("exe").replace(/\/Contents\/MacOS\/[^/]+$/, "");
+  if (process.platform === "darwin" || process.platform === "win32") {
+    // 开发模式下禁止设置开机启动（避免注册 node_modules 中的 Electron 二进制文件）
+    if (!app.isPackaged) {
+      return {
+        success: false,
+        errorKey: "error.autoLaunchDevMode",
+        fallback: "Auto launch is not available in development mode",
+      };
+    }
     try {
-      if (enabled) {
-        await execAsync(
-          `osascript -e 'tell application "System Events" to make login item at end with properties {name:"Mole", path:"${appPath}", hidden:false}'`,
-        );
-      } else {
-        await execAsync(
-          `osascript -e 'tell application "System Events" to delete login item "Mole"'`,
-        );
+      const showWindow =
+        options && options.showWindow != null
+          ? options.showWindow
+          : loadAutoLaunchConfig().showWindow;
+      app.setLoginItemSettings({ openAtLogin: enabled, openAsHidden: enabled && !showWindow });
+      // 保存 showWindow 偏好
+      const config = loadAutoLaunchConfig();
+      config.showWindow = showWindow;
+      saveAutoLaunchConfig(config);
+      // macOS: 清理旧版本遗留的 "Mole" login item
+      if (process.platform === "darwin" && enabled) {
+        try {
+          await execAsync(
+            `osascript -e 'tell application "System Events" to delete login item "Mole"'`,
+          );
+        } catch {
+          // 静默忽略 — "Mole" 可能不存在
+        }
       }
       return { success: true };
     } catch (err) {
       console.error("[AutoLaunch] Error:", err.message);
-      return { success: false, errorKey: "mole.execFailed", fallback: err.message };
+      return { success: false, errorKey: "error.autoLaunchFailed", fallback: err.message };
     }
   }
-  // Windows 平台可使用 app.setLoginItemSettings
-  if (process.platform === "win32") {
-    app.setLoginItemSettings({ openAtLogin: enabled });
-    return { success: true };
-  }
-  return { success: false, errorKey: "mole.execFailed", fallback: "当前平台暂不支持开机启动设置" };
+  return {
+    success: false,
+    errorKey: "error.autoLaunchNotSupported",
+    fallback: "当前平台暂不支持开机启动设置",
+  };
 });
 
 // IPC: Get auto launch status
@@ -920,24 +1002,45 @@ ipcMain.handle("get-auto-launch", async (event) => {
   if (!validateSender(event.senderFrame)) {
     throw new Error("Invalid sender");
   }
-  if (process.platform === "darwin") {
-    try {
-      const { stdout } = await execAsync(
-        "osascript -e 'tell application \"System Events\" to get the name of every login item'",
-        { encoding: "utf8" },
-      );
-      const enabled = stdout.includes("Mole");
-      return { enabled };
-    } catch (err) {
-      console.error("[AutoLaunch] Error:", err.message);
-      return { enabled: false, error: err.message };
+  try {
+    if (process.platform === "darwin" || process.platform === "win32") {
+      if (!app.isPackaged) {
+        return { enabled: false, showWindow: false, devMode: true };
+      }
+      const settings = app.getLoginItemSettings();
+      const config = loadAutoLaunchConfig();
+      return { enabled: settings.openAtLogin, showWindow: config.showWindow };
     }
+    return { enabled: false, showWindow: false, error: "当前平台暂不支持开机启动查询" };
+  } catch (err) {
+    console.error("[AutoLaunch] get-auto-launch error:", err.message);
+    return { enabled: false, showWindow: false };
   }
-  if (process.platform === "win32") {
-    const settings = app.getLoginItemSettings();
-    return { enabled: settings.openAtLogin };
+});
+
+// IPC: Set auto launch show window preference (开机启动时是否显示主界面)
+ipcMain.handle("set-auto-launch-show-window", (event, showWindow) => {
+  if (!validateSender(event.senderFrame)) {
+    throw new Error("Invalid sender");
   }
-  return { enabled: false, error: "当前平台暂不支持开机启动查询" };
+  try {
+    const config = loadAutoLaunchConfig();
+    config.showWindow = !!showWindow;
+    saveAutoLaunchConfig(config);
+    // 同步更新 login item 的 openAsHidden
+    if (process.platform === "darwin" || process.platform === "win32") {
+      if (app.isPackaged) {
+        const settings = app.getLoginItemSettings();
+        if (settings.openAtLogin) {
+          app.setLoginItemSettings({ openAtLogin: true, openAsHidden: !config.showWindow });
+        }
+      }
+    }
+    return { success: true };
+  } catch (err) {
+    console.error("[AutoLaunch] set-auto-launch-show-window error:", err.message);
+    return { success: false, error: err.message };
+  }
 });
 
 // IPC: Check if mole is installed (used by welcome screen)
@@ -974,85 +1077,120 @@ ipcMain.on("stop-status-monitor", () => {
 // ──────────────────────────
 
 ipcMain.handle("get-menu-bar-enabled", () => {
-  return loadMenuBarConfig().enabled;
+  try {
+    return loadMenuBarConfig().enabled;
+  } catch (err) {
+    console.error("[MenuBar] get-menu-bar-enabled error:", err.message);
+    return false;
+  }
 });
 
 ipcMain.handle("set-menu-bar-enabled", (_event, enabled) => {
-  console.log("[Main] set-menu-bar-enabled:", enabled);
-  const config = loadMenuBarConfig();
-  config.enabled = enabled;
-  saveMenuBarConfig(config);
+  try {
+    console.log("[Main] set-menu-bar-enabled:", enabled);
+    const config = loadMenuBarConfig();
+    config.enabled = enabled;
+    saveMenuBarConfig(config);
 
-  if (process.platform !== "darwin") {
-    console.log("[Main] Menu bar only supported on macOS, current:", process.platform);
-    return { success: false, error: "菜单栏监控仅支持 macOS" };
-  }
+    if (process.platform !== "darwin") {
+      console.log("[Main] Menu bar only supported on macOS, current:", process.platform);
+      return { success: false, error: "菜单栏监控仅支持 macOS" };
+    }
 
-  const monitor = getMenuBarMonitor();
-  if (enabled) {
-    monitor.start(config);
-  } else {
-    monitor.stop();
+    const monitor = getMenuBarMonitor();
+    if (enabled) {
+      monitor.start(config);
+    } else {
+      monitor.stop();
+    }
+    return { success: true };
+  } catch (err) {
+    console.error("[MenuBar] set-menu-bar-enabled error:", err.message);
+    return { success: false, error: err.message };
   }
-  return { success: true };
 });
 
 ipcMain.handle("get-menu-bar-modules", () => {
-  return loadMenuBarConfig().modules;
+  try {
+    return loadMenuBarConfig().modules;
+  } catch (err) {
+    console.error("[MenuBar] get-menu-bar-modules error:", err.message);
+    return {};
+  }
 });
 
 ipcMain.handle("set-menu-bar-modules", (_event, modules) => {
-  const config = loadMenuBarConfig();
-  config.modules = modules;
-  saveMenuBarConfig(config);
+  try {
+    const config = loadMenuBarConfig();
+    config.modules = modules;
+    saveMenuBarConfig(config);
 
-  if (menuBarMonitor) {
-    menuBarMonitor.updateModules(modules);
+    if (menuBarMonitor) {
+      menuBarMonitor.updateModules(modules);
+    }
+    return { success: true };
+  } catch (err) {
+    console.error("[MenuBar] set-menu-bar-modules error:", err.message);
+    return { success: false, error: err.message };
   }
-  return { success: true };
 });
 
 /** Get the full menu bar config (modules + appearance + theme) */
 ipcMain.handle("get-menu-bar-config", () => {
-  return loadMenuBarConfig();
+  try {
+    return loadMenuBarConfig();
+  } catch (err) {
+    console.error("[MenuBar] get-menu-bar-config error:", err.message);
+    return {};
+  }
 });
 
 /** Set the full menu bar config and push to running monitor */
 ipcMain.handle("set-menu-bar-config", (_event, config) => {
-  console.log("[Main] set-menu-bar-config received, keys:", Object.keys(config || {}));
-  const disk = loadMenuBarConfig();
-  console.log(
-    "[Main] set-menu-bar-config disk config layout:",
-    disk && disk.layout,
-    "enabled:",
-    disk && disk.enabled,
-  );
-  const merged = { ...disk, ...config };
-  console.log(
-    "[Main] set-menu-bar-config merged layout:",
-    merged.layout,
-    "keys:",
-    Object.keys(merged),
-  );
-  saveMenuBarConfig(merged);
-  if (menuBarMonitor) {
-    console.log("[Main] set-menu-bar-config pushing to monitor");
-    menuBarMonitor.updateConfig(merged);
-  } else {
-    console.log("[Main] set-menu-bar-config WARNING: menuBarMonitor is null, cannot push");
+  try {
+    console.log("[Main] set-menu-bar-config received, keys:", Object.keys(config || {}));
+    const disk = loadMenuBarConfig();
+    console.log(
+      "[Main] set-menu-bar-config disk config layout:",
+      disk && disk.layout,
+      "enabled:",
+      disk && disk.enabled,
+    );
+    const merged = { ...disk, ...config };
+    console.log(
+      "[Main] set-menu-bar-config merged layout:",
+      merged.layout,
+      "keys:",
+      Object.keys(merged),
+    );
+    saveMenuBarConfig(merged);
+    if (menuBarMonitor) {
+      console.log("[Main] set-menu-bar-config pushing to monitor");
+      menuBarMonitor.updateConfig(merged);
+    } else {
+      console.log("[Main] set-menu-bar-config WARNING: menuBarMonitor is null, cannot push");
+    }
+    return { success: true };
+  } catch (err) {
+    console.error("[MenuBar] set-menu-bar-config error:", err.message);
+    return { success: false, error: err.message };
   }
-  return { success: true };
 });
 
 /** Receives theme change notifications from the renderer for popup theme sync */
 ipcMain.handle("set-theme", (_event, themeData) => {
-  const config = loadMenuBarConfig();
-  config.theme = themeData;
-  saveMenuBarConfig(config);
-  if (menuBarMonitor) {
-    menuBarMonitor.updateConfig({ theme: themeData });
+  try {
+    const config = loadMenuBarConfig();
+    config.theme = themeData;
+    saveMenuBarConfig(config);
+    if (menuBarMonitor) {
+      menuBarMonitor.updateConfig({ theme: themeData });
+    }
+    return { success: true };
+  } catch (err) {
+    console.error("[MenuBar] set-theme error:", err.message);
+    return { success: false, error: err.message };
   }
-  return { success: true };
 });
 
 // Store user-chosen language for popup i18n
