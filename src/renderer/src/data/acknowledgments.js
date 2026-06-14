@@ -26,13 +26,6 @@ export function getAcknowledgments() {
       license: "MIT",
     },
     {
-      name: "ECharts",
-      author: "Baidu Inc.",
-      url: "https://echarts.apache.org",
-      descriptionKey: "data.echartsDesc",
-      license: "Apache-2.0",
-    },
-    {
       name: "Microsoft Fluent Design",
       author: "Microsoft",
       url: "https://www.microsoft.com/design/fluent/",

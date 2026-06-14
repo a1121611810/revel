@@ -61,4 +61,4 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: node scripts/build.mjs
+      - run: pnpm build:mac

@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 /**
- * Flip Electron Fuses for security hardening
+ * @deprecated This script is no longer used.
+ * Fuse flipping is now handled automatically by @electron-forge/plugin-fuses
+ * during the `electron-forge make` step. See forge.config.js.
  *
+ * Previously: Flip Electron Fuses for security hardening
  * Run after electron-builder to disable dangerous features:
  * - runAsNode: false
  * - nodeCliInspect: false

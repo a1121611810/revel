@@ -9,6 +9,7 @@ test-results
 docs/*
 !docs/screenshots/
 release
+out/
 .reasonix/
 .pnpm-store
 .codegraph
