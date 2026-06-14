@@ -15,6 +15,8 @@ const mockApp = vi.hoisted(() => ({
   requestSingleInstanceLock: vi.fn(() => true),
   getVersion: vi.fn(() => "1.0.0"),
   getPath: vi.fn(() => "/fake/path"),
+  commandLine: { appendSwitch: vi.fn() },
+  getLoginItemSettings: vi.fn(() => ({ openAtLogin: false, wasOpenedAtLogin: false })),
 }));
 
 const mockBrowserWindow = vi.hoisted(() => {

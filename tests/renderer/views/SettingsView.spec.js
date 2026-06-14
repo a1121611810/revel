@@ -44,8 +44,9 @@ describe("SettingsView 组件", () => {
     localStorageMock.clear();
     window.electronAPI = {
       getAppVersion: vi.fn().mockResolvedValue("1.2.3"),
-      getAutoLaunch: vi.fn().mockResolvedValue({ enabled: false }),
+      getAutoLaunch: vi.fn().mockResolvedValue({ enabled: false, showWindow: false }),
       setAutoLaunch: vi.fn().mockResolvedValue({ success: true }),
+      setAutoLaunchShowWindow: vi.fn().mockResolvedValue({ success: true }),
       hasSudoPassword: vi.fn().mockResolvedValue({ has: false }),
       clearSudoPassword: vi.fn().mockResolvedValue({ success: true }),
       checkForUpdates: vi.fn().mockResolvedValue({
@@ -337,9 +338,9 @@ describe("SettingsView 组件", () => {
       expect(aboutLabel.text()).toContain("v1.2.3");
     });
 
-    it('应渲染"检查更新"按钮', () => {
+    it('应渲染"查看发布版"按钮', () => {
       const wrapper = mountWithI18n(SettingsView);
-      const btn = wrapper.findAll("button").find((b) => b.text().includes("检查更新"));
+      const btn = wrapper.findAll("button").find((b) => b.text().includes("查看发布版"));
       expect(btn).toBeDefined();
       expect(btn.exists()).toBe(true);
     });
@@ -379,9 +380,9 @@ describe("SettingsView 组件", () => {
   });
 
   describe("交互行为", () => {
-    it('点击"检查更新"按钮不应抛出异常', async () => {
+    it('点击"查看发布版"按钮不应抛出异常', async () => {
       const wrapper = mountWithI18n(SettingsView);
-      const btn = wrapper.findAll("button").find((b) => b.text().includes("检查更新"));
+      const btn = wrapper.findAll("button").find((b) => b.text().includes("查看发布版"));
       await expect(btn.trigger("click")).resolves.not.toThrow();
     });
 

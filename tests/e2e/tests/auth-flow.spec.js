@@ -48,8 +48,9 @@ test.describe('Auth Flow E2E', () => {
     await window.locator('text=设置').click()
     await window.waitForTimeout(500)
 
-    // Verify permissions section heading is visible
-    await expect(window.getByRole('heading', { name: '权限与授权', exact: true })).toBeVisible()
+    // Verify permissions section heading is visible (inside settings-permissions card)
+    const permissionsCard = window.locator('[data-testid="settings-permissions"]')
+    await expect(permissionsCard.getByRole('heading')).toBeVisible()
 
     // Verify module permission items exist
     const moduleItems = await window.locator('.auth-module-item').all()
@@ -62,11 +63,11 @@ test.describe('Auth Flow E2E', () => {
     await window.locator('text=开始使用').click()
     await window.waitForTimeout(500)
 
-    await window.locator('text=清理').click()
+    await window.getByRole('tab', { name: '清理', exact: true }).click()
     await window.waitForTimeout(500)
 
     // In E2E mode, ensureSudo always returns success, so no auth error card should appear
-    await window.locator('text=开始扫描').click()
+    await window.locator('[data-testid="clean-preview-scan"]').click()
     await window.waitForTimeout(500)
 
     const authErrorCard = window.locator('.auth-error-card')

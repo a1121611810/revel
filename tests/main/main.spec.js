@@ -58,6 +58,7 @@ const mockApp = vi.hoisted(() => {
     getLoginItemSettings: vi.fn(() => ({ openAtLogin: false })),
     requestSingleInstanceLock: vi.fn(() => true),
     dock: { setIcon: vi.fn() },
+    commandLine: { appendSwitch: vi.fn() },
     _whenReadyCallbacks: whenReadyCallbacks,
   };
 });
