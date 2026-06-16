@@ -268,6 +268,43 @@ function saveAutoLaunchConfig(config) {
   }
 }
 
+// ──────────────────────────────────────────────────────
+// Dock icon visibility config persistence (macOS only)
+// ──────────────────────────────────────────────────────
+
+function getDockConfigPath() {
+  const userDataPath = app.getPath("userData");
+  if (!userDataPath || typeof userDataPath !== "string") return null;
+  return path.join(userDataPath, "dock-config.json");
+}
+
+const DOCK_CONFIG_DEFAULTS = {
+  hideStrategy: "never",
+  hideOnAutoLaunch: false,
+};
+
+function loadDockConfig() {
+  try {
+    const p = getDockConfigPath();
+    if (p && fs.existsSync(p)) {
+      const disk = JSON.parse(fs.readFileSync(p, "utf8"));
+      return { ...DOCK_CONFIG_DEFAULTS, ...disk };
+    }
+  } catch {
+    // ignore
+  }
+  return { ...DOCK_CONFIG_DEFAULTS };
+}
+
+function saveDockConfig(config) {
+  try {
+    const p = getDockConfigPath();
+    if (p) fs.writeFileSync(p, JSON.stringify(config), "utf8");
+  } catch {
+    // ignore
+  }
+}
+
 // ──────────────────────────
 // Security helpers
 // ──────────────────────────
@@ -394,6 +431,31 @@ function createWindow(hidden = false) {
     if (!app.isQuiting) {
       event.preventDefault();
       mainWindow.hide();
+      // Hide Dock icon if strategy is onClose
+      if (process.platform === "darwin") {
+        try {
+          const dockConfig = loadDockConfig();
+          if (dockConfig.hideStrategy === "onClose") {
+            app.dock.hide();
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+  });
+
+  // Hide Dock icon on minimize if strategy is onMinimize
+  mainWindow.on("minimize", () => {
+    if (process.platform === "darwin") {
+      try {
+        const dockConfig = loadDockConfig();
+        if (dockConfig.hideStrategy === "onMinimize") {
+          app.dock.hide();
+        }
+      } catch {
+        // ignore
+      }
     }
   });
 }
@@ -476,6 +538,18 @@ app.whenReady().then(() => {
 
   createWindow(shouldHideWindow);
 
+  // Hide Dock icon on auto-launch if configured
+  if (process.platform === "darwin" && wasAutoLaunched) {
+    try {
+      const dockConfig = loadDockConfig();
+      if (dockConfig.hideOnAutoLaunch) {
+        app.dock.hide();
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   // Auto-start menu bar monitor if previously enabled (macOS only)
   if (process.platform === "darwin") {
     const menuBarConfig = loadMenuBarConfig();
@@ -489,6 +563,16 @@ app.whenReady().then(() => {
   }
 
   app.on("activate", () => {
+    // Restore Dock icon if hidden
+    if (process.platform === "darwin" && app.dock) {
+      try {
+        if (!app.dock.isVisible()) {
+          app.dock.show();
+        }
+      } catch {
+        // ignore
+      }
+    }
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     } else {
@@ -1039,6 +1123,70 @@ ipcMain.handle("set-auto-launch-show-window", (event, showWindow) => {
     return { success: true };
   } catch (err) {
     console.error("[AutoLaunch] set-auto-launch-show-window error:", err.message);
+    return { success: false, error: err.message };
+  }
+});
+
+// IPC: Get dock icon visibility config (macOS only)
+ipcMain.handle("get-dock-config", (event) => {
+  if (!validateSender(event.senderFrame)) {
+    throw new Error("Invalid sender");
+  }
+  if (process.platform !== "darwin") {
+    return { hideStrategy: "never", hideOnAutoLaunch: false };
+  }
+  return loadDockConfig();
+});
+
+// IPC: Set dock icon hide strategy and apply immediately
+ipcMain.handle("set-dock-strategy", (event, strategy) => {
+  if (!validateSender(event.senderFrame)) {
+    throw new Error("Invalid sender");
+  }
+  if (process.platform !== "darwin") {
+    return { success: false, error: "Dock icon settings are only available on macOS" };
+  }
+  try {
+    const validStrategies = ["never", "onClose", "onMinimize"];
+    if (!validStrategies.includes(strategy)) {
+      return { success: false, error: "Invalid strategy" };
+    }
+    const config = loadDockConfig();
+    const prevStrategy = config.hideStrategy;
+    config.hideStrategy = strategy;
+    saveDockConfig(config);
+    // If switching from a hide strategy back to "never", restore Dock icon if hidden
+    if (prevStrategy !== "never" && strategy === "never") {
+      try {
+        if (!app.dock.isVisible()) {
+          app.dock.show();
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return { success: true };
+  } catch (err) {
+    console.error("[Dock] set-dock-strategy error:", err.message);
+    return { success: false, error: err.message };
+  }
+});
+
+// IPC: Set dock icon hide on auto-launch preference
+ipcMain.handle("set-dock-hide-on-auto-launch", (event, enabled) => {
+  if (!validateSender(event.senderFrame)) {
+    throw new Error("Invalid sender");
+  }
+  if (process.platform !== "darwin") {
+    return { success: false, error: "Dock icon settings are only available on macOS" };
+  }
+  try {
+    const config = loadDockConfig();
+    config.hideOnAutoLaunch = !!enabled;
+    saveDockConfig(config);
+    return { success: true };
+  } catch (err) {
+    console.error("[Dock] set-dock-hide-on-auto-launch error:", err.message);
     return { success: false, error: err.message };
   }
 });

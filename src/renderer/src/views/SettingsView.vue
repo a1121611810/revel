@@ -201,6 +201,48 @@
           </label>
         </div>
 
+        <!-- Dock Icon Visibility (macOS only) -->
+        <div v-if="isMacOS" class="setting-row">
+          <div class="setting-info">
+            <span class="setting-label">{{ $t("settings.dockIcon") }}</span>
+            <span class="setting-desc">{{ $t("settings.dockIconDesc") }}</span>
+          </div>
+          <div class="theme-toggle-group">
+            <button
+              class="btn btn-outline btn-small"
+              :class="{ active: dockStrategy === 'never' }"
+              @click="setDockStrategy('never')"
+            >
+              {{ $t("settings.dockAlways") }}
+            </button>
+            <button
+              class="btn btn-outline btn-small"
+              :class="{ active: dockStrategy === 'onClose' }"
+              @click="setDockStrategy('onClose')"
+            >
+              {{ $t("settings.dockHideOnClose") }}
+            </button>
+            <button
+              class="btn btn-outline btn-small"
+              :class="{ active: dockStrategy === 'onMinimize' }"
+              @click="setDockStrategy('onMinimize')"
+            >
+              {{ $t("settings.dockHideOnMinimize") }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Auto-launch Dock icon (sub-option, macOS only) -->
+        <label v-if="isMacOS && startupEnabled && !autoLaunchDevMode" class="checkbox setting-sub">
+          <input
+            v-model="dockHideOnAutoLaunch"
+            type="checkbox"
+            class="checkbox-input"
+            @change="toggleDockHideOnAutoLaunch"
+          />
+          <span>{{ $t("settings.dockHideOnAutoLaunch") }}</span>
+        </label>
+
         <!-- Menu Bar Monitor -->
         <div class="setting-row">
           <div class="setting-info">
@@ -841,6 +883,7 @@ onMounted(() => {
   loadAppVersion();
   loadAutoLaunchStatus();
   loadMenuBarFullConfig();
+  loadDockConfig();
   loadSavedPasswordStatus();
   loadCleanPreferences();
   auth.loadStatus();
@@ -909,6 +952,40 @@ async function toggleAutoLaunchShowWindow() {
     await window.electronAPI.setAutoLaunchShowWindow(autoLaunchShowWindow.value);
   } catch {
     autoLaunchShowWindow.value = !autoLaunchShowWindow.value;
+  }
+}
+
+// === Dock Icon Visibility (macOS only) ===
+const dockStrategy = ref("never");
+const dockHideOnAutoLaunch = ref(false);
+
+async function loadDockConfig() {
+  try {
+    const config = await window.electronAPI.getDockConfig();
+    dockStrategy.value = config.hideStrategy || "never";
+    dockHideOnAutoLaunch.value = config.hideOnAutoLaunch || false;
+  } catch {
+    dockStrategy.value = "never";
+    dockHideOnAutoLaunch.value = false;
+  }
+}
+
+async function setDockStrategy(strategy) {
+  try {
+    const res = await window.electronAPI.setDockStrategy(strategy);
+    if (res && res.success) {
+      dockStrategy.value = strategy;
+    }
+  } catch {
+    // silently fail
+  }
+}
+
+async function toggleDockHideOnAutoLaunch() {
+  try {
+    await window.electronAPI.setDockHideOnAutoLaunch(dockHideOnAutoLaunch.value);
+  } catch {
+    dockHideOnAutoLaunch.value = !dockHideOnAutoLaunch.value;
   }
 }
 

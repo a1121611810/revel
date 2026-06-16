@@ -99,6 +99,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   setAutoLaunchShowWindow: (showWindow) =>
     ipcRenderer.invoke("set-auto-launch-show-window", showWindow),
 
+  // Dock icon visibility (macOS only)
+  getDockConfig: () => ipcRenderer.invoke("get-dock-config"),
+  setDockStrategy: (strategy) => ipcRenderer.invoke("set-dock-strategy", strategy),
+  setDockHideOnAutoLaunch: (enabled) => ipcRenderer.invoke("set-dock-hide-on-auto-launch", enabled),
+
   // Check if mole CLI is installed (used by welcome screen)
   checkMoleInstalled: () => ipcRenderer.invoke("check-mole-installed"),
 

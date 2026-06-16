@@ -79,6 +79,9 @@ describe("SettingsView 组件", () => {
         },
       }),
       setMenuBarConfig: vi.fn().mockResolvedValue({ success: true }),
+      getDockConfig: vi.fn().mockResolvedValue({ hideStrategy: "never", hideOnAutoLaunch: false }),
+      setDockStrategy: vi.fn().mockResolvedValue({ success: true }),
+      setDockHideOnAutoLaunch: vi.fn().mockResolvedValue({ success: true }),
     };
   });
 
@@ -552,6 +555,98 @@ describe("SettingsView 组件", () => {
 
     it("setAppLocale is available in electronAPI", async () => {
       expect(window.electronAPI.setAppLocale).toBeDefined();
+    });
+  });
+
+  describe("Dock 栏图标设置", () => {
+    it("macOS 下渲染 Dock 图标设置行（三选按钮组）", async () => {
+      window.electronAPI.getPlatform.mockResolvedValue("darwin");
+      const wrapper = mountWithI18n(SettingsView);
+      await flushPromises();
+
+      const labels = wrapper.findAll(".setting-label").map((l) => l.text());
+      expect(labels).toContain("Dock 栏图标");
+
+      // Find the Dock icon setting row
+      const dockRow = wrapper
+        .findAll(".setting-row")
+        .find((row) => row.find(".setting-label").text() === "Dock 栏图标");
+      expect(dockRow).toBeDefined();
+
+      const buttons = dockRow.findAll(".theme-toggle-group .btn");
+      expect(buttons.length).toBe(3);
+      const btnLabels = buttons.map((b) => b.text().trim());
+      expect(btnLabels).toContain("始终显示");
+      expect(btnLabels).toContain("关闭时隐藏");
+      expect(btnLabels).toContain("最小化时隐藏");
+    });
+
+    it("非 macOS 平台不显示 Dock 设置", async () => {
+      window.electronAPI.getPlatform.mockResolvedValue("win32");
+      const wrapper = mountWithI18n(SettingsView);
+      await flushPromises();
+
+      const labels = wrapper.findAll(".setting-label").map((l) => l.text());
+      expect(labels).not.toContain("Dock 栏图标");
+    });
+
+    it("开机启动启用时显示“开机自启时隐藏 Dock 图标”子选项", async () => {
+      window.electronAPI.getPlatform.mockResolvedValue("darwin");
+      window.electronAPI.getAutoLaunch.mockResolvedValue({ enabled: true, showWindow: false });
+      const wrapper = mountWithI18n(SettingsView);
+      await flushPromises();
+
+      const checkboxes = wrapper.findAll(".checkbox");
+      const dockCheckbox = checkboxes.find(
+        (cb) => cb.text().trim() === "开机自启时隐藏 Dock 图标",
+      );
+      expect(dockCheckbox).toBeDefined();
+      expect(dockCheckbox.exists()).toBe(true);
+    });
+
+    it("开机启动未启用时不显示 Dock 子选项", async () => {
+      window.electronAPI.getPlatform.mockResolvedValue("darwin");
+      window.electronAPI.getAutoLaunch.mockResolvedValue({ enabled: false, showWindow: false });
+      const wrapper = mountWithI18n(SettingsView);
+      await flushPromises();
+
+      const checkboxes = wrapper.findAll(".checkbox");
+      const dockCheckbox = checkboxes.find(
+        (cb) => cb.text().trim() === "开机自启时隐藏 Dock 图标",
+      );
+      expect(dockCheckbox).toBeUndefined();
+    });
+
+    it("点击策略按钮调用 setDockStrategy IPC", async () => {
+      window.electronAPI.getPlatform.mockResolvedValue("darwin");
+      const wrapper = mountWithI18n(SettingsView);
+      await flushPromises();
+
+      const dockRow = wrapper
+        .findAll(".setting-row")
+        .find((row) => row.find(".setting-label").text() === "Dock 栏图标");
+      const buttons = dockRow.findAll(".theme-toggle-group .btn");
+
+      // Click "关闭时隐藏"
+      await buttons[1].trigger("click");
+      await flushPromises();
+      expect(window.electronAPI.setDockStrategy).toHaveBeenCalledWith("onClose");
+    });
+
+    it("切换 Dock 自启 checkbox 调用 setDockHideOnAutoLaunch IPC", async () => {
+      window.electronAPI.getPlatform.mockResolvedValue("darwin");
+      window.electronAPI.getAutoLaunch.mockResolvedValue({ enabled: true, showWindow: false });
+      const wrapper = mountWithI18n(SettingsView);
+      await flushPromises();
+
+      const checkboxes = wrapper.findAll(".checkbox");
+      const dockCheckbox = checkboxes.find(
+        (cb) => cb.text().trim() === "开机自启时隐藏 Dock 图标",
+      );
+      const input = dockCheckbox.find(".checkbox-input");
+      await input.setValue(true);
+      await flushPromises();
+      expect(window.electronAPI.setDockHideOnAutoLaunch).toHaveBeenCalledWith(true);
     });
   });
 });

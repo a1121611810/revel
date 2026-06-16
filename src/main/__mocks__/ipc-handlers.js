@@ -22,6 +22,9 @@ const handleNames = [
   "set-menu-bar-config",
   "set-theme",
   "set-app-locale",
+  "get-dock-config",
+  "set-dock-strategy",
+  "set-dock-hide-on-auto-launch",
 ];
 handleNames.forEach((h) => {
   try {
@@ -89,6 +92,11 @@ ipcMain.handle("get-menu-bar-config", () => ({
 ipcMain.handle("set-menu-bar-config", () => ({ success: true }));
 ipcMain.handle("set-theme", () => ({ success: true }));
 ipcMain.handle("set-app-locale", () => ({ success: true }));
+
+// Dock icon visibility mocks (macOS only)
+ipcMain.handle("get-dock-config", () => ({ hideStrategy: "never", hideOnAutoLaunch: false }));
+ipcMain.handle("set-dock-strategy", () => ({ success: true }));
+ipcMain.handle("set-dock-hide-on-auto-launch", () => ({ success: true }));
 
 // Simulate system-status push
 let statusTimer = null;
