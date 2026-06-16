@@ -8,6 +8,7 @@ on:
 
 env:
   CI: true
+  npm_config_electron_mirror: https://github.com/electron/electron/releases/download/
   ELECTRON_MIRROR: https://github.com/electron/electron/releases/download/
 
 jobs:
