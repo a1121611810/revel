@@ -2,6 +2,13 @@
 
 本文件遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式，并采用 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [2.0.2](https://github.com/a1121611810/revel/compare/v2.0.1...v2.0.2) (2026-06-16)
+
+
+### ### Fixed
+
+* 修正 release.yml 产出文件路径和 Node 版本 ([1dbd7c4](https://github.com/a1121611810/revel/commit/1dbd7c4ce571bd09e2dd7db54d17ab3114987af1))
+
 ## [2.0.1](https://github.com/a1121611810/revel/compare/v2.0.0...v2.0.1) (2026-06-16)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "revel",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Revel - Mole CLI 的 Fluent Design 图形界面",
   "main": "./dist/main/main.js",
   "author": "a1121611810",
