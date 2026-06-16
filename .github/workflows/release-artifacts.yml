@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+      - 'revel-v*'
 
 permissions:
   contents: write
@@ -13,6 +14,7 @@ jobs:
     runs-on: macos-latest
     env:
       CI: true
+      ELECTRON_MIRROR: https://electronjs.org/headers/
     steps:
       - uses: actions/checkout@v4
 
@@ -26,8 +28,12 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+        env:
+          ELECTRON_MIRROR: https://electronjs.org/headers/
 
       - run: pnpm build:mac
+        env:
+          ELECTRON_MIRROR: https://electronjs.org/headers/
 
       - name: Upload artifacts to GitHub Release
         uses: softprops/action-gh-release@v2

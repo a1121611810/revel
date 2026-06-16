@@ -29,7 +29,8 @@ jobs:
 
       - name: Auto-merge the release PR
         if: ${{ steps.release.outputs.pr != '' }}
-        run: gh pr merge --merge --auto "$PR_NUMBER"
+        run: |
+          PR_NUMBER=$(echo '${{ steps.release.outputs.pr }}' | python3 -c "import sys,json;print(json.load(sys.stdin)['number'])")
+          gh pr merge --merge --auto "$PR_NUMBER"
         env:
           GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
-          PR_NUMBER: ${{ fromJson(steps.release.outputs.pr).number }}
