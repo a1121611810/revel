@@ -2,6 +2,13 @@
 
 本文件遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式，并采用 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [3.0.1](https://github.com/a1121611810/revel/compare/v3.0.0...v3.0.1) (2026-06-16)
+
+
+### ### Fixed
+
+* 所有 CI 工作流添加 CI=true 环境变量，修复 pnpm 无 TTY 错误 ([a1b8ea7](https://github.com/a1121611810/revel/commit/a1b8ea72a15bd1333c7a3a2033b9ee7e4a405ab0))
+
 ## [3.0.0](https://github.com/a1121611810/revel/compare/v2.0.0...v3.0.0) (2026-06-16)
 
 
