@@ -11,6 +11,8 @@ permissions:
 jobs:
   build-macos:
     runs-on: macos-latest
+    env:
+      CI: true
     steps:
       - uses: actions/checkout@v4
 

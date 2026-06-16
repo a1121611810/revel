@@ -39,11 +39,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
         env:
+          CI: true
           ELECTRON_MIRROR: https://electronjs.org/headers/
 
       - name: Build macOS (${{ matrix.arch }})
         run: pnpm exec electron-forge make --platform=darwin --arch=${{ matrix.arch }}
         env:
+          CI: true
           ELECTRON_MIRROR: https://electronjs.org/headers/
 
       - name: Upload to GitHub Release
