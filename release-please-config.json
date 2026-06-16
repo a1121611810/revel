@@ -4,6 +4,7 @@
     ".": {
       "release-type": "node",
       "include-v-in-tag": true,
+      "include-component-in-tag": false,
       "changelog-sections": [
         { "type": "feat", "section": "### Added", "hidden": false },
         { "type": "fix", "section": "### Fixed", "hidden": false },
