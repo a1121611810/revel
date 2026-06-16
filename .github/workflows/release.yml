@@ -38,7 +38,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
@@ -51,8 +51,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            out/maker-zip/darwin/*.zip
-            out/maker-dmg/*.dmg
+            out/make/*.dmg
+            out/make/zip/**/*.zip
           fail_on_unmatched_files: true
           generate_release_notes: false
         env:
