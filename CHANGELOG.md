@@ -2,6 +2,13 @@
 
 本文件遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式，并采用 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [3.0.1](https://github.com/a1121611810/revel/compare/v3.0.0...v3.0.1) (2026-06-16)
+
+
+### ### Fixed
+
+* vitest 添加重试机制，CI 使用 pnpm test ([6d092b4](https://github.com/a1121611810/revel/commit/6d092b4884471a2c1ca38bf110a1ab37183231b3))
+
 ## [3.0.0](https://github.com/a1121611810/revel/compare/v2.0.0...v3.0.0) (2026-06-16)
 
 
