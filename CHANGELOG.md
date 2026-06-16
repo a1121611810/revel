@@ -2,6 +2,13 @@
 
 本文件遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式，并采用 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [3.0.2](https://github.com/a1121611810/revel/compare/v3.0.1...v3.0.2) (2026-06-16)
+
+
+### ### Fixed
+
+* 修复 CI release build 和 test 遗留问题 ([a0a63f3](https://github.com/a1121611810/revel/commit/a0a63f3eefeeba7839463fda6b207c94c4b52b2c))
+
 ## [3.0.1](https://github.com/a1121611810/revel/compare/v3.0.0...v3.0.1) (2026-06-16)
 
 
