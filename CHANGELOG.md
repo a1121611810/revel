@@ -2,6 +2,44 @@
 
 本文件遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式，并采用 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [3.0.0](https://github.com/a1121611810/revel/compare/v2.0.0...v3.0.0) (2026-06-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* Build commands changed from electron-builder to Electron Forge.
+    - Replace electron-builder with @electron-forge/cli, maker-dmg, maker-zip, plugin-fuses
+    - Add forge.config.js for Electron Forge configuration
+    - Update build:mac and build:win scripts to use electron-forge make
+    - Remove electron-builder config block from package.json
+    - Deprecate scripts/flip-fuses.mjs (now handled by @electron-forge/plugin-fuses)
+    - Add node-linker=hoisted to .npmrc and pnpm-workspace.yaml
+    - Add electron mirror config and update onlyBuiltDependencies
+    - Add out/ to .gitignore
+    - Update CI build command to pnpm build:mac
+    - Remove echarts from dependencies
+    - Update licenses.json and acknowledgments for new dependency tree
+
+### ### Added
+
+* **dock:** 添加 macOS Dock 图标显示隐藏策略及持久化 ([c0884b2](https://github.com/a1121611810/revel/commit/c0884b24621288326d08ac5f29767f2b5119e691))
+* enhance auto-launch with show-window preference and main process hardening ([1dfd48f](https://github.com/a1121611810/revel/commit/1dfd48fbb8e71ebec30cbe093d86124013958de7))
+* 侧边栏底部显示应用版本号 ([5d62e30](https://github.com/a1121611810/revel/commit/5d62e30ce5fd83a316502ee42531d72df1f44034))
+
+
+### ### Fixed
+
+* 使用 peter-evans/enable-pull-request-automerge 替代 gh CLI ([45e3b91](https://github.com/a1121611810/revel/commit/45e3b91a6d983e2c603aa1bad02159df2983985a))
+* 修复 release tag 格式为 vX.Y.Z 并兼容旧格式 ([7f2f3d6](https://github.com/a1121611810/revel/commit/7f2f3d61764493c273b710758cf7ab2df49ab105))
+* 添加 checkout 步骤并使用 fromJson 提取 PR 编号 ([c0dd92c](https://github.com/a1121611810/revel/commit/c0dd92cdcdaedbd6000f39a9243d6f774b4d9389))
+* 添加 issues: write 权限到 release-please workflow ([85fc0b5](https://github.com/a1121611810/revel/commit/85fc0b5076cbd58e509bf0a61056edeb8bcc1894))
+* 迁移 release-please-config.json 到 v4 manifest 格式 ([7a3d346](https://github.com/a1121611810/revel/commit/7a3d346e7cb2d166ac730f0d90f38561e371de65))
+
+
+### ### Changed
+
+* migrate from electron-builder to electron-forge ([ec21fb7](https://github.com/a1121611810/revel/commit/ec21fb701f64ae13a921764e84184059b247dfb9))
+
 ## [2.0.0](https://github.com/a1121611810/revel/compare/revel-v1.0.0...revel-v2.0.0) (2026-06-16)
 
 
