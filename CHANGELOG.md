@@ -2,6 +2,13 @@
 
 本文件遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式，并采用 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [3.0.3](https://github.com/a1121611810/revel/compare/v3.0.2...v3.0.3) (2026-06-16)
+
+
+### ### Fixed
+
+* 修正 ELECTRON_MIRROR URL，统一 workflow 级环境变量 ([10d4a25](https://github.com/a1121611810/revel/commit/10d4a25b8b26a2941539f2c7b9f3137f52cdab1f))
+
 ## [3.0.2](https://github.com/a1121611810/revel/compare/v3.0.1...v3.0.2) (2026-06-16)
 
 
