@@ -2,6 +2,13 @@
 
 本文件遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式，并采用 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [2.0.1](https://github.com/a1121611810/revel/compare/v2.0.0...v2.0.1) (2026-06-16)
+
+
+### ### Fixed
+
+* 增加 vitest 超时时间到 30s，修复 CI 测试超时问题 ([ff62628](https://github.com/a1121611810/revel/commit/ff62628f6253f8b21e7d0dd333b2267971b67e58))
+
 ## [2.0.0](https://github.com/a1121611810/revel/compare/v1.0.0...v2.0.0) (2026-06-16)
 
 
