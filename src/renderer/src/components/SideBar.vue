@@ -49,12 +49,15 @@
       </button>
     </nav>
 
-    <div class="fui-sidebar-footer">{{ $t("nav.builtWith") }}</div>
+    <div class="fui-sidebar-footer">
+      <span>{{ $t("nav.builtWith") }}</span>
+      <span v-if="appVersion" class="sidebar-version">v{{ appVersion }}</span>
+    </div>
   </aside>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import Icon from "./Icon.vue";
 
@@ -65,6 +68,16 @@ defineProps({
 defineEmits(["update:modelValue"]);
 
 const { t } = useI18n();
+
+const appVersion = ref("");
+
+onMounted(async () => {
+  try {
+    appVersion.value = await window.electronAPI.getAppVersion();
+  } catch {
+    appVersion.value = "";
+  }
+});
 
 function handleMouseMove(event) {
   const target = event.currentTarget;
@@ -279,5 +292,15 @@ const navItems = computed(() => [
   text-align: center;
   flex-shrink: 0;
   -webkit-app-region: no-drag;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-version {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--colorBrandForeground1, #0078d4);
+  letter-spacing: 0.5px;
 }
 </style>
