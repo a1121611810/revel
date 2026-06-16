@@ -25,7 +25,11 @@ jobs:
 
       - name: Enable auto-merge on release PR
         if: ${{ steps.release.outputs.pr != '' }}
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
-          pull-request-number: ${{ fromJson(steps.release.outputs.pr).number }}
+        uses: actions/checkout@v4
+
+      - name: Auto-merge the release PR
+        if: ${{ steps.release.outputs.pr != '' }}
+        run: gh pr merge --merge --auto "$PR_NUMBER"
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          PR_NUMBER: ${{ fromJson(steps.release.outputs.pr).number }}
