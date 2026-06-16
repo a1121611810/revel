@@ -2,6 +2,13 @@
 
 本文件遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式，并采用 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [3.0.5](https://github.com/a1121611810/revel/compare/v3.0.4...v3.0.5) (2026-06-16)
+
+
+### ### Fixed
+
+* CI 使用 pnpm build 代替 pnpm build:mac，跳过 electron 二进制下载，升级 Node 24 ([e980d2c](https://github.com/a1121611810/revel/commit/e980d2c172802d52149933a006ed8fc0e81d0727))
+
 ## [3.0.4](https://github.com/a1121611810/revel/compare/v3.0.3...v3.0.4) (2026-06-16)
 
 
