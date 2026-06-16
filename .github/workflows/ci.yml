@@ -7,6 +7,22 @@ on:
     branches: [main]
 
 jobs:
+  pr-title:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title (Conventional Commits)
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if ! echo "$PR_TITLE" | grep -qE '^(feat|fix|feat!|fix!|chore|docs|refactor|test|ci|build|perf|revert)(\(.+\))?!?: .+'; then
+            echo "::error::PR 标题不符合 Conventional Commits 格式。"
+            echo "::error::正确格式示例: 'feat: 添加暗色主题' 或 'fix: 修复托盘图标问题'"
+            echo "::error::更多信息见 AGENTS.md 中的「提交规范」章节"
+            exit 1
+          fi
+          echo "PR 标题格式正确: $PR_TITLE"
+
   lint:
     runs-on: macos-latest
     steps:
