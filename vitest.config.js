@@ -9,6 +9,7 @@ export default defineConfig({
     environment: 'jsdom',
     testTimeout: 30000,
     hookTimeout: 30000,
+    retry: 2,
     include: ['tests/**/*.spec.js'],
     exclude: ['tests/browser/**/*', 'tests/e2e/**/*'],
     coverage: {

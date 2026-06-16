@@ -69,7 +69,7 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: vitest run
+      - run: pnpm test
 
   build:
     runs-on: macos-latest
