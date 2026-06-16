@@ -2,6 +2,13 @@
 
 本文件遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式，并采用 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [3.0.4](https://github.com/a1121611810/revel/compare/v3.0.3...v3.0.4) (2026-06-16)
+
+
+### ### Fixed
+
+* 添加 npm_config_electron_mirror 覆盖 .npmrc 的中国镜像 ([495116b](https://github.com/a1121611810/revel/commit/495116bd1be2bb5d373c226a078070af328da489))
+
 ## [3.0.3](https://github.com/a1121611810/revel/compare/v3.0.2...v3.0.3) (2026-06-16)
 
 
