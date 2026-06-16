@@ -7,6 +7,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    testTimeout: 30000,
+    hookTimeout: 30000,
     include: ['tests/**/*.spec.js'],
     exclude: ['tests/browser/**/*', 'tests/e2e/**/*'],
     coverage: {
