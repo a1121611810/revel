@@ -40,7 +40,7 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm lint
 
   format:
@@ -54,7 +54,7 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm format:check
 
   test:
@@ -68,7 +68,7 @@ jobs:
         with:
           node-version: 24
       - run: pnpm store prune --force || true
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm test -- --reporter=verbose --reporter=junit --outputFile.junit=test-results.xml
       - name: Upload test results
         if: ${{ failure() }}
@@ -88,5 +88,5 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm build
