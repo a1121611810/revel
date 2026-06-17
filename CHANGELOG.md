@@ -2,6 +2,13 @@
 
 本文件遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式，并采用 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [3.1.2](https://github.com/a1121611810/revel/compare/v3.1.1...v3.1.2) (2026-06-17)
+
+
+### ### Fixed
+
+* 启用 macos-alias 和 fs-xattr 原生模块编译 ([1eaa6ed](https://github.com/a1121611810/revel/commit/1eaa6ed5848355b62e8914eb8272cad5f4c45d31))
+
 ## [3.1.1](https://github.com/a1121611810/revel/compare/v3.1.0...v3.1.1) (2026-06-17)
 
 
