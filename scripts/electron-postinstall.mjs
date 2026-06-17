@@ -20,6 +20,21 @@ const electronDir = join(root, "node_modules", "electron");
 const distVersionFile = join(electronDir, "dist", "version");
 const pathFile = join(electronDir, "path.txt");
 const installScript = join(electronDir, "install.js");
+const npmrcPath = join(root, ".npmrc");
+
+/**
+ * 从 .npmrc 读取 electron mirror，如果没有则使用国内默认源
+ */
+function getElectronMirror() {
+  // 优先读取 .npmrc 中的配置
+  try {
+    const npmrc = readFileSync(npmrcPath, "utf-8");
+    const match = npmrc.match(/^electron_mirror\s*=\s*(.+)$/m);
+    if (match) return match[1].trim();
+  } catch {}
+  // 兜底：国内镜像源
+  return "https://npmmirror.com/mirrors/electron/";
+}
 
 function isElectronInstalled() {
   try {
@@ -46,16 +61,15 @@ async function main() {
   }
 
   console.log("[electron-postinstall] 正在安装 Electron binary...");
-  console.log(
-    "[electron-postinstall] 如果下载慢，请配置 ELECTRON_MIRROR 环境变量",
-  );
+  const mirror = getElectronMirror();
+  console.log(`[electron-postinstall] 使用 mirror: ${mirror}`);
 
   const result = spawnSync(process.execPath, [installScript], {
     cwd: root,
     stdio: "inherit",
     env: {
       ...process.env,
-      // 确保 install.js 有足够的超时时间
+      ELECTRON_MIRROR: mirror,
     },
     timeout: 5 * 60 * 1000, // 5 分钟超时
   });
