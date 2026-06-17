@@ -2,6 +2,18 @@
 
 本文件遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式，并采用 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [3.1.0](https://github.com/a1121611810/revel/compare/v3.0.2...v3.1.0) (2026-06-17)
+
+
+### ### Added
+
+* 添加 postinstall 脚本自动安装 electron binary + 国内 mirror ([cdb2e5f](https://github.com/a1121611810/revel/commit/cdb2e5f99339d93443c73349bfcb34023bebf78c))
+
+
+### ### Fixed
+
+* 启用 electron postinstall，修复 pnpm build:mac 卡死问题 ([2b48ca3](https://github.com/a1121611810/revel/commit/2b48ca3ffc60a88bdf99beb3e9a9799040ab2caf))
+
 ## [3.0.2](https://github.com/a1121611810/revel/compare/v3.0.1...v3.0.2) (2026-06-16)
 
 
