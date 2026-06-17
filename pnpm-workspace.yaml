@@ -1,7 +1,7 @@
 allowBuilds:
   canvas: true
   electron: true
-  fs-xattr: false
-  macos-alias: false
+  fs-xattr: true
+  macos-alias: true
   simple-git-hooks: true
 nodeLinker: hoisted
