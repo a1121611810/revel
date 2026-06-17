@@ -20,7 +20,7 @@
     "dev": "node scripts/dev.mjs",
     "build": "node scripts/build.mjs",
     "preview": "electron .",
-    "postinstall": "simple-git-hooks",
+    "postinstall": "simple-git-hooks && node scripts/electron-postinstall.mjs",
     "build:mac": "electron-forge make --platform=darwin",
     "build:win": "electron-forge make --platform=win32",
     "test": "vitest run",
