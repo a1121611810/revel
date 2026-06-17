@@ -1,6 +1,6 @@
 allowBuilds:
   canvas: true
-  electron: false
+  electron: true
   fs-xattr: false
   macos-alias: false
   simple-git-hooks: true
