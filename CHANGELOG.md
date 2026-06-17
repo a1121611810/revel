@@ -2,6 +2,13 @@
 
 本文件遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式，并采用 [语义化版本控制](https://semver.org/lang/zh-CN/)。
 
+## [3.1.1](https://github.com/a1121611810/revel/compare/v3.1.0...v3.1.1) (2026-06-17)
+
+
+### ### Fixed
+
+* electron-postinstall 手动传递 ELECTRON_MIRROR 到 install.js ([df75e9a](https://github.com/a1121611810/revel/commit/df75e9ac30ff6a429e4b36b4053a77d695ef90e6))
+
 ## [3.1.0](https://github.com/a1121611810/revel/compare/v3.0.2...v3.1.0) (2026-06-17)
 
 
